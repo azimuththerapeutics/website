@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Waypoint Cooperative Members Portal - Tools and resources for member-providers including room scheduling, sublease payments, clinical supervision, and community resources.">
+    <meta name="theme-color" content="#1B3A5C">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Waypoint Cooperative - Members Portal">
+    <meta property="og:description" content="Internal member portal for Waypoint Cooperative worker-owned cooperative members.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.waypointcoop.org/members.html">
+
+    <title>Members Portal | Waypoint Cooperative</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================================
+           MEMBER PORTAL - CUSTOM STYLES
+           ============================================================================ */
+
+        /* Member Portal Specific Classes */
+        .member-only-notice {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8f2ff 100%);
+            border-left: 4px solid var(--color-blue-accent);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            color: var(--color-navy);
+            font-size: 0.95rem;
+        }
+
+        .member-only-notice::before {
+            content: '🔒 ';
+            margin-right: var(--spacing-xs);
+        }
+
+        /* Member Link in Navigation */
+        .member-link {
+            background: rgba(74, 127, 181, 0.15);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 20px;
+            border: 1px solid var(--color-blue-accent);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .navbar.scrolled .member-link {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .member-link::before {
+            content: '🔒';
+            font-size: 0.9rem;
+        }
+
+        /* Smaller Hero for Members Page */
+        .hero-member {
+            min-height: 45vh;
+            padding-top: 120px;
+        }
+
+        .hero-member h1 {
+            font-size: 3rem;
+        }
+
+        .hero-member p {
+            font-size: 1.15rem;
+        }
+
+        /* Quick Actions Grid - Prominent 4-Column Layout */
+        .quick-actions {
+            background: var(--color-white);
+            padding: var(--spacing-2xl) 0;
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, var(--color-pale) 0%, var(--color-white) 100%);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--color-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .action-card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--color-light-bg) 0%, var(--color-pale) 100%);
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .action-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .action-card h3 {
+            margin-bottom: var(--spacing-sm);
+            font-size: 1.25rem;
+        }
+
+        .action-card p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+            color: var(--color-text-light);
+        }
+
+        /* Section Styling */
+        .member-section {
+            background: var(--color-white);
+            padding: var(--spacing-2xl) 0;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .member-section:nth-child(odd) {
+            background: var(--color-pale);
+        }
+
+        .member-section h2 {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .section-description {
+            font-size: 1.05rem;
+            color: var(--color-text-light);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.8;
+        }
+
+        /* Room Scheduling Section */
+        .room-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .room-type-card {
+            background: var(--color-white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            border-left: 4px solid var(--color-blue-accent);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .room-type-card h4 {
+            margin-top: 0;
+            color: var(--color-blue-mid);
+        }
+
+        .room-type-card p {
+            margin-bottom: 0;
+            font-size: 0.95rem;
+            color: var(--color-text-light);
+        }
+
+        /* Widget Placeholders */
+        .widget-placeholder {
+            background: var(--color-light-bg);
+            border: 2px dashed var(--color-border);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+            color: var(--color-text-light);
+            margin: var(--spacing-lg) 0;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .widget-placeholder p {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .widget-label {
+            font-weight: 600;
+            color: var(--color-navy);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* Supervision Section */
+        .supervision-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .supervision-type {
+            background: var(--color-white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+
+        .supervision-type h4 {
+            margin-top: 0;
+            color: var(--color-blue-accent);
+        }
+
+        .supervisor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .supervisor-card {
+            background: var(--color-white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            transition: all var(--transition-base);
+        }
+
+        .supervisor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .supervisor-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-blue-accent), var(--color-blue-mid));
+        }
+
+        .supervisor-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-navy);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .supervisor-credentials {
+            color: var(--color-blue-accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .supervisor-bio {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            line-height: 1.6;
+        }
+
+        /* Sign-Up Form */
+        .supervision-form {
+            background: var(--color-pale);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            max-width: 500px;
+            margin: var(--spacing-xl) 0;
+        }
+
+        .supervision-form h4 {
+            margin-top: 0;
+        }
+
+        /* Events & Calendar Section */
+        .events-calendar {
+            background: var(--color-white);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .calendar-placeholder {
+            background: var(--color-light-bg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            text-align: center;
+            color: var(--color-text-light);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upcoming-events {
+            list-style: none;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .event-item {
+            background: var(--color-pale);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            border-left: 4px solid var(--color-blue-accent);
+        }
+
+        .event-date {
+            color: var(--color-blue-accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: var(--color-navy);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .event-description {
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Resources Section */
+        .resources-link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .resource-link {
+            background: var(--color-white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            transition: all var(--transition-base);
+            color: var(--color-text);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .resource-link:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            color: var(--color-blue-accent);
+        }
+
+        .resource-icon {
+            font-size: 2rem;
+        }
+
+        .resource-link h4 {
+            margin-bottom: 0;
+        }
+
+        .resource-link p {
+            margin-bottom: 0;
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+        }
+
+        /* Connecticut Resources */
+        .ct-resources {
+            background: var(--color-white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--color-border);
+            margin-top: var(--spacing-lg);
+        }
+
+        .ct-resources h4 {
+            color: var(--color-navy);
+            margin-top: 0;
+        }
+
+        .ct-resources-list {
+            list-style: none;
+        }
+
+        .ct-resources-list li {
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .ct-resources-list li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .ct-resources-list a {
+            font-weight: 500;
+        }
+
+        /* Member Directory */
+        .member-directory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .member-card {
+            background: var(--color-white);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+        }
+
+        .member-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .member-info {
+            background: linear-gradient(135deg, var(--color-blue-accent), var(--color-blue-mid));
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        .member-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--color-navy);
+            text-align: center;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .member-credentials {
+            color: var(--color-blue-accent);
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.85rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .member-detail {
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.9rem;
+        }
+
+        .member-detail-label {
+            color: var(--color-text-light);
+            font-weight: 500;
+        }
+
+        .member-specialty {
+            color: var(--color-text-light);
+            font-size: 0.85rem;
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .directory-update-note {
+            background: var(--color-pale);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            margin-top: var(--spacing-xl);
+            text-align: center;
+            color: var(--color-text-light);
+            font-size: 0.95rem;
+        }
+
+        /* CTA Buttons */
+        .member-cta {
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hero-member {
+                min-height: 35vh;
+                padding-top: 100px;
+            }
+
+            .hero-member h1 {
+                font-size: 2.2rem;
+            }
+
+            .action-card {
+                padding: var(--spacing-lg);
+            }
+
+            .supervisor-grid,
+            .member-directory-grid,
+            .resources-link-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-member h1 {
+                font-size: 1.8rem;
+            }
+
+            .action-icon {
+                font-size: 2.5rem;
+            }
+
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-sticky" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/logo-nav.png" alt="Waypoint Cooperative" class="logo-img">
+                <span class="logo-text">Waypoint</span>
+            </div>
+
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="programs.html" class="nav-link">Programs</a>
+                <a href="community.html" class="nav-link">Community</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="https://waypointcooperative.clientsecure.me/" class="nav-link nav-cta" target="_blank" rel="noopener">Client Portal</a>
+                <a href="members.html" class="nav-link active member-link">🔒 Members</a>
+            </div>
+
+            <div class="nav-cta-group">
+                <a href="tel:8603095980" class="nav-phone-btn">📞 (860) 309-5980</a>
+                <a href="https://waypointcooperative.clientsecure.me/" target="_blank" rel="noopener" class="nav-schedule-btn">Schedule</a>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero hero-member">
+        <div class="hero-content">
+            <h1>Member Portal</h1>
+            <p class="hero-tagline">Tools and resources for Waypoint Cooperative members</p>
+        </div>
+        <div class="hero-gradient"></div>
+    </section>
+
+    <!-- Member-Only Notice -->
+    <section class="quick-actions">
+        <div class="container">
+            <div class="member-only-notice">
+                This page is for Waypoint Cooperative members only. Access is restricted to current member-providers.
+            </div>
+
+            <!-- Quick Actions Grid -->
+            <div class="quick-actions-grid">
+                <a href="#scheduling" class="action-card">
+                    <div class="action-icon">📅</div>
+                    <h3>Schedule a Room</h3>
+                    <p>Book office space, group rooms, or shared workspaces</p>
+                </a>
+                <a href="#payment" class="action-card">
+                    <div class="action-icon">💳</div>
+                    <h3>Pay Sublease</h3>
+                    <p>Access the payment portal for office sublease fees</p>
+                </a>
+                <a href="#supervision" class="action-card">
+                    <div class="action-icon">👥</div>
+                    <h3>Clinical Supervision</h3>
+                    <p>Sign up for individual or group supervision sessions</p>
+                </a>
+                <a href="#events" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <h3>Events Calendar</h3>
+                    <p>View CEUs, trainings, meetings, and community events</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Room & Office Scheduling Section -->
+    <section class="member-section" id="scheduling">
+        <div class="container">
+            <h2>Room & Office Scheduling</h2>
+            <p class="section-description">
+                Waypoint Cooperative provides flexible office and meeting space for our member-providers. Our scheduling system allows you to book individual offices, group meeting rooms, and shared workspaces as needed. All spaces are equipped with essential amenities and are available on a weekly or daily basis.
+            </p>
+
+            <div class="room-types-grid">
+                <div class="room-type-card">
+                    <h4>Individual Office</h4>
+                    <p>Private space for client sessions, paperwork, and consultation</p>
+                </div>
+                <div class="room-type-card">
+                    <h4>Group Room</h4>
+                    <p>Spacious room for therapy groups, workshops, and meetings</p>
+                </div>
+                <div class="room-type-card">
+                    <h4>Shared Workspace</h4>
+                    <p>Flexible desk space with meeting table access</p>
+                </div>
+            </div>
+
+            <!-- Scheduling Widget Placeholder -->
+            <div class="widget-placeholder">
+                <div class="widget-label">Room Scheduling Widget</div>
+                <p>Calendly, Acuity Scheduling, or similar scheduling tool will be embedded here</p>
+                <p style="font-size: 0.85rem; margin-top: var(--spacing-lg);"><!-- Embed code: &lt;iframe src="https://scheduling-service.com/waypoint"&gt;&lt;/iframe&gt; --></p>
+            </div>
+
+            <div style="background: var(--color-pale); padding: var(--spacing-lg); border-radius: var(--border-radius-lg); margin-top: var(--spacing-lg);">
+                <h4 style="margin-top: 0; color: var(--color-blue-mid);">Rates & Availability</h4>
+                <p style="margin-bottom: var(--spacing-sm);">Individual office: $[rate]/day or $[rate]/week</p>
+                <p style="margin-bottom: var(--spacing-sm);">Group room: $[rate]/hour</p>
+                <p style="margin-bottom: 0;">Shared workspace: $[rate]/day</p>
+            </div>
+
+            <div style="background: #fff5f5; padding: var(--spacing-lg); border-radius: var(--border-radius-lg); margin-top: var(--spacing-lg); border-left: 4px solid #c41e3a;">
+                <p style="margin-bottom: 0;"><strong>Questions about room availability?</strong> Contact the office at <a href="tel:8603095980" style="font-weight: 600;">(860) 309-5980</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sublease & Payment Portal Section -->
+    <section class="member-section" id="payment">
+        <div class="container">
+            <h2>Sublease & Payment Portal</h2>
+            <p class="section-description">
+                As a member of Waypoint Cooperative, your monthly sublease payment supports our shared practice space and administrative infrastructure. This section provides easy access to payment processing, billing history, and related documentation.
+            </p>
+
+            <!-- Payment Widget Placeholder -->
+            <div class="widget-placeholder">
+                <div class="widget-label">Secure Payment Portal</div>
+                <p>Stripe, PayPal, or custom payment system will be embedded here</p>
+                <p style="font-size: 0.85rem; margin-top: var(--spacing-lg);"><!-- Embed code: &lt;stripe-payment-form&gt;&lt;/stripe-payment-form&gt; --></p>
+            </div>
+
+            <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg); margin-top: var(--spacing-lg);">
+                <div style="background: var(--color-pale); padding: var(--spacing-lg); border-radius: var(--border-radius-lg);">
+                    <h4 style="margin-top: 0; color: var(--color-blue-mid);">Monthly Sublease</h4>
+                    <p style="margin-bottom: var(--spacing-xs);"><strong>Amount:</strong> $[amount]/month</p>
+                    <p style="margin-bottom: var(--spacing-xs);"><strong>Due Date:</strong> [Date]</p>
+                    <p style="margin-bottom: 0;"><strong>Payment Methods:</strong> Card, ACH transfer, check</p>
+                </div>
+                <div style="background: var(--color-pale); padding: var(--spacing-lg); border-radius: var(--border-radius-lg);">
+                    <h4 style="margin-top: 0; color: var(--color-blue-mid);">Payment History</h4>
+                    <p style="margin-bottom: var(--spacing-xs);">View and download receipts for all payments made</p>
+                    <p style="margin-bottom: 0;"><a href="#" style="font-weight: 600;">Access Payment History &rarr;</a></p>
+                </div>
+            </div>
+
+            <div style="background: var(--color-white); padding: var(--spacing-lg); border-radius: var(--border-radius-lg); border: 1px solid var(--color-border); margin-top: var(--spacing-lg);">
+                <h4 style="margin-top: 0; color: var(--color-navy);">Sublease Agreement & Documents</h4>
+                <ul style="list-style: none; margin-bottom: 0;">
+                    <li style="margin-bottom: var(--spacing-sm);"><a href="#" style="font-weight: 500;">📄 Master Sublease Agreement</a></li>
+                    <li style="margin-bottom: var(--spacing-sm);"><a href="#" style="font-weight: 500;">📄 Facility Use Guidelines</a></li>
+                    <li style="margin-bottom: 0;"><a href="#" style="font-weight: 500;">📄 Amendment History</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clinical Supervision Section -->
+    <section class="member-section" id="supervision">
+        <div class="container">
+            <h2>Clinical Supervision</h2>
+            <p class="section-description">
+                Waypoint Cooperative provides clinical supervision to support your professional development, licensure requirements, and clinical excellence. We offer individual and group supervision in multiple modalities, led by experienced licensed supervisors.
+            </p>
+
+            <div class="supervision-types">
+                <div class="supervision-type">
+                    <h4>Individual Supervision</h4>
+                    <p>One-on-one sessions tailored to your specific clinical needs and learning goals</p>
+                </div>
+                <div class="supervision-type">
+                    <h4>Group Supervision</h4>
+                    <p>Collaborative peer learning and case consultation with fellow members</p>
+                </div>
+                <div class="supervision-type">
+                    <h4>Triadic Supervision</h4>
+                    <p>Three-person format combining individual and peer consultation</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-2xl);">Supervision by Credential Type</h3>
+            <p class="section-description">
+                Select the supervision type that matches your licensure requirements:
+            </p>
+
+            <div class="supervision-types">
+                <div class="supervision-type">
+                    <h4>LCSW Supervision</h4>
+                    <p>For Master's level clinical social workers</p>
+                </div>
+                <div class="supervision-type">
+                    <h4>LMFT Supervision</h4>
+                    <p>For licensed marriage and family therapists</p>
+                </div>
+                <div class="supervision-type">
+                    <h4>LADC Supervision</h4>
+                    <p>For licensed alcohol and drug counselors</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-2xl);">Meet Our Supervisors</h3>
+
+            <div class="supervisor-grid">
+                <div class="supervisor-card">
+                    <div class="supervisor-avatar"></div>
+                    <div class="supervisor-name">Dr. Sarah Mitchell, LCSW-R</div>
+                    <div class="supervisor-credentials">Licensed Clinical Social Worker</div>
+                    <div class="supervisor-bio">
+                        20+ years experience in clinical practice and supervision. Specializes in trauma-informed care and organizational development.
+                    </div>
+                </div>
+                <div class="supervisor-card">
+                    <div class="supervisor-avatar" style="background: linear-gradient(135deg, #e8b4f1, #d4a5e8);"></div>
+                    <div class="supervisor-name">James Chen, LMFT</div>
+                    <div class="supervisor-credentials">Licensed Marriage & Family Therapist</div>
+                    <div class="supervisor-bio">
+                        Specializes in couples therapy, systems work, and clinical skill development. Available for individual and group supervision.
+                    </div>
+                </div>
+                <div class="supervisor-card">
+                    <div class="supervisor-avatar" style="background: linear-gradient(135deg, #b4e8f1, #a5d4e8);"></div>
+                    <div class="supervisor-name">Maria Rodriguez, LADC</div>
+                    <div class="supervisor-credentials">Licensed Alcohol & Drug Counselor</div>
+                    <div class="supervisor-bio">
+                        Extensive background in substance use treatment and harm reduction. Provides culturally-sensitive supervision and consultation.
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--color-light-bg); padding: var(--spacing-lg); border-radius: var(--border-radius-lg); margin-top: var(--spacing-xl);">
+                <p style="margin-bottom: 0;"><strong>📝 Hours Tracking:</strong> All supervision hours are documented and tracked for Connecticut licensure requirements. Records are maintained securely and available upon request.</p>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-2xl);">Sign Up for Supervision</h3>
+            <p class="section-description">
+                Complete the form below to request supervision sessions:
+            </p>
+
+            <div class="supervision-form">
+                <form>
+                    <div class="form-group">
+                        <label for="sup-name">Your Name</label>
+                        <input type="text" id="sup-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sup-credential">Credential Type</label>
+                        <select id="sup-credential" required>
+                            <option value="">Select credential...</option>
+                            <option value="lcsw">LCSW</option>
+                            <option value="lmft">LMFT</option>
+                            <option value="ladc">LADC</option>
+                            <option value="aprn">APRN</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sup-type">Supervision Type</label>
+                        <select id="sup-type" required>
+                            <option value="">Select type...</option>
+                            <option value="individual">Individual Supervision</option>
+                            <option value="group">Group Supervision</option>
+                            <option value="triadic">Triadic Supervision</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sup-schedule">Preferred Schedule</label>
+                        <input type="text" id="sup-schedule" placeholder="e.g., Tuesdays 10am, Thursdays afternoon">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Request Supervision</button>
+                </form>
+            </div>
+
+            <p style="text-align: center; margin-top: var(--spacing-lg); color: var(--color-text-light); font-size: 0.95rem;">
+                Questions? Contact Sarah Mitchell at supervision@waypointcoop.org or (860) 309-5980
+            </p>
+        </div>
+    </section>
+
+    <!-- Events & Calendar Section -->
+    <section class="member-section" id="events">
+        <div class="container">
+            <h2>Events & Calendar</h2>
+            <p class="section-description">
+                Stay connected with the Waypoint community through member meetings, continuing education workshops, peer consultation groups, and community resource sharing.
+            </p>
+
+            <!-- Calendar Widget Placeholder -->
+            <div class="events-calendar">
+                <h3 style="margin-top: 0;">Shared Calendar</h3>
+                <div class="calendar-placeholder">
+                    <!-- Embed code: &lt;iframe src="https://calendar.google.com/calendar/embed?..."&gt;&lt;/iframe&gt; -->
+                    <div>
+                        <p style="margin-bottom: var(--spacing-md);"><strong>Google Calendar Embed</strong></p>
+                        <p style="font-size: 0.9rem;">Calendar will display upcoming events, member meetings, and CEU offerings</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-2xl);">Upcoming Events</h3>
+            <ul class="upcoming-events">
+                <li class="event-item">
+                    <div class="event-date">2026-03-22 @ 6:00 PM</div>
+                    <div class="event-title">Monthly Co-op Member Meeting</div>
+                    <div class="event-description">All members welcome. Discuss cooperative business, clinical updates, and community news.</div>
+                </li>
+                <li class="event-item">
+                    <div class="event-date">2026-03-28 @ 2:00 PM</div>
+                    <div class="event-title">CEU Workshop: Trauma-Informed Care Updates</div>
+                    <div class="event-description">3-hour continuing education workshop presented by Dr. Sarah Mitchell. LCSW/LMFT approved.</div>
+                </li>
+                <li class="event-item">
+                    <div class="event-date">2026-04-05 @ 5:00 PM</div>
+                    <div class="event-title">Peer Consultation Group</div>
+                    <div class="event-description">Informal case consultation and peer support. Held bi-weekly at the office.</div>
+                </li>
+                <li class="event-item">
+                    <div class="event-date">2026-04-10 @ 3:00 PM</div>
+                    <div class="event-title">Community Resource Meeting</div>
+                    <div class="event-description">Connect with local providers and learn about resources for clients. Refreshments provided.</div>
+                </li>
+                <li class="event-item">
+                    <div class="event-date">2026-04-15 @ 6:00 PM</div>
+                    <div class="event-title">New Member Orientation</div>
+                    <div class="event-description">Welcome orientation for newly joined members. Overview of cooperative operations and resources.</div>
+                </li>
+            </ul>
+
+            <div class="member-cta">
+                <a href="#" class="btn btn-secondary">Submit an Event</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="member-section" id="resources">
+        <div class="container">
+            <h2>Resources & Links</h2>
+            <p class="section-description">
+                Essential tools, systems, and references for member-providers. Quick access to clinical, administrative, and professional development resources.
+            </p>
+
+            <h3 style="margin-top: var(--spacing-2xl);">Primary Tools & Systems</h3>
+
+            <div class="resources-link-grid">
+                <a href="https://www.simplepractice.com/signin" target="_blank" rel="noopener noreferrer" class="resource-link">
+                    <div class="resource-icon">💼</div>
+                    <h4>SimplePractice</h4>
+                    <p>EHR, scheduling, and billing</p>
+                </a>
+                <a href="#" class="resource-link">
+                    <div class="resource-icon">📖</div>
+                    <h4>Member Handbook</h4>
+                    <p>Policies and procedures</p>
+                </a>
+                <a href="#" class="resource-link">
+                    <div class="resource-icon">⚖️</div>
+                    <h4>Policies & Procedures</h4>
+                    <p>Governance and operations</p>
+                </a>
+                <a href="#" class="resource-link">
+                    <div class="resource-icon">📋</div>
+                    <h4>Community Resources Directory</h4>
+                    <p>Local referral network</p>
+                </a>
+                <a href="#" class="resource-link">
+                    <div class="resource-icon">🚨</div>
+                    <h4>Emergency Protocols</h4>
+                    <p>Crisis response procedures</p>
+                </a>
+                <a href="#" class="resource-link">
+                    <div class="resource-icon">💻</div>
+                    <h4>IT Support & Tech Help</h4>
+                    <p>Technical assistance</p>
+                </a>
+            </div>
+
+            <h3 style="margin-top: var(--spacing-2xl);">Connecticut-Specific Resources</h3>
+
+            <div class="ct-resources">
+                <h4>State & Professional Resources</h4>
+                <ul class="ct-resources-list">
+                    <li>
+                        <a href="https://portal.ct.gov/dph" target="_blank" rel="noopener noreferrer">CT Department of Public Health</a>
+                        <div style="font-size: 0.85rem; color: var(--color-text-light); margin-top: var(--spacing-xs);">License verification and regulatory information</div>
+                    </li>
+                    <li>
+                        <a href="https://portal.ct.gov/dmhas" target="_blank" rel="noopener noreferrer">CT DMHAS (Department of Mental Health and Addiction Services)</a>
+                        <div style="font-size: 0.85rem; color: var(--color-text-light); margin-top: var(--spacing-xs);">Mental health and substance use resources</div>
+                    </li>
+                    <li>
+                        <a href="https://www.211.org" target="_blank" rel="noopener noreferrer">211 Connecticut</a>
+                        <div style="font-size: 0.85rem; color: var(--color-text-light); margin-top: var(--spacing-xs);">Community resource helpline and database</div>
+                    </li>
+                    <li>
+                        <a href="https://www.ct.gov/deep" target="_blank" rel="noopener noreferrer">CT Suicide Prevention Line</a>
+                        <div style="font-size: 0.85rem; color: var(--color-text-light); margin-top: var(--spacing-xs);">988 Suicide & Crisis Lifeline (call or text 988)</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Member Directory Section -->
+    <section class="member-section" id="directory">
+        <div class="container">
+            <h2>Member Directory</h2>
+            <p class="section-description">
+                Internal directory of Waypoint Cooperative members. This information is for internal use only and supports collaboration, consultation, and community building among member-providers.
+            </p>
+
+            <div class="member-directory-grid">
+                <div class="member-card">
+                    <div class="member-info"></div>
+                    <div class="member-name">Dr. Sarah Mitchell</div>
+                    <div class="member-credentials">LCSW-R, Ph.D.</div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Specialties:</span> Trauma, organizational development
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Office Days:</span> Mon, Tue, Wed, Thu
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Contact:</span> <a href="mailto:sarah@waypointcoop.org">Email</a> | Ext. 105
+                    </div>
+                    <div class="member-specialty">Individual & group therapy, clinical supervision</div>
+                </div>
+
+                <div class="member-card">
+                    <div class="member-info" style="background: linear-gradient(135deg, #e8b4f1, #d4a5e8);"></div>
+                    <div class="member-name">James Chen</div>
+                    <div class="member-credentials">LMFT</div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Specialties:</span> Couples, systems work
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Office Days:</span> Tue, Wed, Thu, Fri
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Contact:</span> <a href="mailto:james@waypointcoop.org">Email</a> | Ext. 102
+                    </div>
+                    <div class="member-specialty">Couples & family therapy, supervision</div>
+                </div>
+
+                <div class="member-card">
+                    <div class="member-info" style="background: linear-gradient(135deg, #b4e8f1, #a5d4e8);"></div>
+                    <div class="member-name">Maria Rodriguez</div>
+                    <div class="member-credentials">LADC</div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Specialties:</span> Substance use, harm reduction
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Office Days:</span> Mon, Wed, Fri
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Contact:</span> <a href="mailto:maria@waypointcoop.org">Email</a> | Ext. 103
+                    </div>
+                    <div class="member-specialty">Substance use treatment, group facilitation</div>
+                </div>
+
+                <div class="member-card">
+                    <div class="member-info" style="background: linear-gradient(135deg, #f1e8b4, #e8d4a5);"></div>
+                    <div class="member-name">Dr. Rebecca Evans</div>
+                    <div class="member-credentials">PMHNP-BC</div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Specialties:</span> Medication management, psychiatry
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Office Days:</span> Mon, Thu
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Contact:</span> <a href="mailto:rebecca@waypointcoop.org">Email</a> | Ext. 101
+                    </div>
+                    <div class="member-specialty">Psychiatric evaluation, medication management</div>
+                </div>
+
+                <div class="member-card">
+                    <div class="member-info" style="background: linear-gradient(135deg, #b4f1d4, #a5e8c2);"></div>
+                    <div class="member-name">David Thornton</div>
+                    <div class="member-credentials">LCSW, MSW</div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Specialties:</span> Grief, life transitions
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Office Days:</span> Tue, Wed, Fri
+                    </div>
+                    <div class="member-detail">
+                        <span class="member-detail-label">Contact:</span> <a href="mailto:david@waypointcoop.org">Email</a> | Ext. 104
+                    </div>
+                    <div class="member-specialty">Individual therapy, group facilitation</div>
+                </div>
+            </div>
+
+            <div class="directory-update-note">
+                <p style="margin-bottom: 0;">To update your directory listing, contact <a href="mailto:admin@waypointcoop.org">admin@waypointcoop.org</a> or call (860) 309-5980</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Waypoint Cooperative</h4>
+                    <p>
+                        40 Main Street, Suite 16<br>
+                        Torrington, CT 06790<br>
+                        <a href="tel:8603095980">(860) 309-5980</a>
+                    </p>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="programs.html">Programs</a></li>
+                        <li><a href="community.html">Community</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="services.html#individual">Individual Therapy</a></li>
+                        <li><a href="services.html#couples">Couples & Family</a></li>
+                        <li><a href="services.html#medication">Medication Management</a></li>
+                        <li><a href="services.html#group">Group Therapy</a></li>
+                        <li><a href="services.html#telehealth">Telehealth</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="programs.html">Group Programs</a></li>
+                        <li><a href="contact.html">New Client Intake</a></li>
+                        <li><a href="contact.html">Billing & Insurance</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Waypoint Cooperative, LLC. All rights reserved.</p>
+                <p class="footer-compliance">NPI: 1942013909 | Taxonomy: 261QM0801X (Mental Health Clinic/Center)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SimplePractice Appointment Request Widget -->
+    <div class="spwidget-button-wrapper" style="display:none;"><a href="https://waypointcooperative.clientsecure.me" class="spwidget-button" data-spwidget-scope-id="a72067dc-7f8e-4ed4-b8d8-39ea630ac58b" data-spwidget-scope-uri="waypointcooperative" data-spwidget-application-id="7c72cb9f9a9b913654bb89d6c7b4e71a77911b30192051da35384b4d0c6d505b" data-spwidget-type="OAR" data-spwidget-scope-global data-spwidget-autobind>Request Appointment</a></div>
+    <script src="https://widget-cdn.simplepractice.com/assets/integration-1.0.js"></script>
+<script>
+      // Uncomment and add your client ID to activate the booking widget:
+      // var defined = defined || {};
+      // defined.spWidget = new SimplePracticeWidget({ practice_id: 'YOUR_SP_PRACTICE_ID' });
+    </script>
+
+    <!-- Floating Book Now CTA -->
+    <a href="https://waypointcooperative.clientsecure.me/" target="_blank" rel="noopener" class="floating-cta" aria-label="Request Appointment">
+        <span class="floating-cta-icon">📅</span>
+        <span class="floating-cta-text">Book Now</span>
+    </a>
+
+    <script src="script.js"></script>
+</body>
+</html>

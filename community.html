@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Community Resources - Waypoint Cooperative. Worker-owned mental health practice serving Northwest Connecticut with community room space and resource directory.">
+    <meta name="theme-color" content="#1B3A5C">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Community | Waypoint Cooperative">
+    <meta property="og:description" content="Waypoint is more than a practice — we're a community resource. Access our community room, resource directory, and partnerships.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.waypointcoop.org/community.html">
+
+    <title>Community | Waypoint Cooperative</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Community Page Specific Styles */
+        .community-resource-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 24px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .community-resource-card:hover {
+            box-shadow: 0 4px 12px rgba(27, 58, 92, 0.1);
+        }
+
+        .community-resource-card h4 {
+            color: #1B3A5C;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .community-resource-card p {
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .resource-phone {
+            font-weight: 600;
+            color: #1B3A5C;
+        }
+
+        .resource-phone a {
+            color: #1B3A5C;
+            text-decoration: none;
+        }
+
+        .resource-phone a:hover {
+            text-decoration: underline;
+        }
+
+        .resource-website {
+            margin-top: 12px;
+        }
+
+        .resource-website a {
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .resource-website a:hover {
+            text-decoration: underline;
+        }
+
+        .resources-category {
+            margin-bottom: 48px;
+        }
+
+        .resources-category h3 {
+            color: #1B3A5C;
+            font-size: 24px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #E8A537;
+            display: inline-block;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 36px;
+        }
+
+        .coop-difference-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+            margin-bottom: 48px;
+        }
+
+        .coop-difference-text h3 {
+            color: #1B3A5C;
+            font-size: 20px;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        .coop-difference-text p {
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .coop-difference-image {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .coop-difference-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .community-room-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 40px;
+            margin-bottom: 48px;
+        }
+
+        .community-room-section h3 {
+            color: #1B3A5C;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .room-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 24px;
+        }
+
+        .room-details p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .room-details-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .room-details-list li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 15px;
+        }
+
+        .room-details-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #E8A537;
+            font-weight: bold;
+        }
+
+        .room-schedule-cta {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .room-schedule-cta .btn {
+            margin: 0 8px;
+        }
+
+        .partner-section {
+            background: linear-gradient(135deg, #1B3A5C 0%, #2d5080 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 48px 40px;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .partner-section h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .partner-section p {
+            font-size: 18px;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        .partner-cta {
+            display: inline-block;
+        }
+
+        .partner-cta a {
+            background: white;
+            color: #1B3A5C;
+        }
+
+        .partner-cta a:hover {
+            background: #f0f0f0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .coop-difference-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .room-details {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .partner-section {
+                padding: 32px 24px;
+            }
+
+            .community-room-section {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-sticky" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/logo-nav.png" alt="Waypoint Cooperative" class="logo-img">
+                <span class="logo-text">Waypoint</span>
+            </div>
+
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="programs.html" class="nav-link">Programs</a>
+                <a href="community.html" class="nav-link active">Community</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="https://waypointcooperative.clientsecure.me/" class="nav-link nav-cta" target="_blank" rel="noopener">Client Portal</a>
+                <a href="members.html" class="nav-link member-link">🔒 Members</a>
+            </div>
+
+            <div class="nav-cta-group">
+                <a href="tel:8603095980" class="nav-phone-btn">📞 (860) 309-5980</a>
+                <a href="https://waypointcooperative.clientsecure.me/" target="_blank" rel="noopener" class="nav-schedule-btn">Schedule</a>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero hero-small">
+        <div class="hero-content">
+            <h1>Community</h1>
+            <p>Waypoint is more than a practice — we're a community resource. As a worker-owned cooperative, we're invested in the wellbeing of Northwest Connecticut.</p>
+        </div>
+        <div class="hero-gradient"></div>
+    </section>
+
+    <!-- The Cooperative Difference -->
+    <section class="why-coop">
+        <div class="container">
+            <h2>The Cooperative Difference</h2>
+
+            <div class="coop-difference-content">
+                <div class="coop-difference-text">
+                    <h3>Worker-Ownership Creates Stability</h3>
+                    <p>When clinicians are invested partners rather than employees, they stay. Reduced turnover means you build lasting relationships with your provider and benefit from continuity of care.</p>
+
+                    <h3>Profits Reinvested in Community</h3>
+                    <p>Our revenue doesn't flow to outside shareholders. Instead, we reinvest in sliding scale capacity, specialized programs, community training, and staff development—strengthening mental health resources across Northwest Connecticut.</p>
+
+                    <h3>Collaborative Decision-Making</h3>
+                    <p>Every clinician has a voice. This cooperative governance leads to better clinical decisions, more ethical practice, and genuine accountability to our clients and community.</p>
+
+                    <h3>Growing Community of Clinicians</h3>
+                    <p>We're actively seeking licensed mental health professionals interested in worker ownership. Join a practice where your wellbeing matters and your voice shapes how we serve our community.</p>
+                </div>
+
+                <div class="coop-difference-image">
+                    <img src="images/team-couch2.jpg" alt="Waypoint Cooperative team in their office" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Room Section -->
+    <section class="community-room-section">
+        <div class="container">
+            <h3>Community Room</h3>
+            <p>Waypoint offers meeting and gathering space available for community use. Our bright, welcoming room at 40 Main Street, Suite 16 in Torrington is designed to support healing and connection.</p>
+
+            <div class="room-details">
+                <div>
+                    <h4 style="color: #1B3A5C; margin-top: 0;">Location & Access</h4>
+                    <p>
+                        <strong>40 Main Street, Suite 16<br>
+                        Torrington, CT 06790</strong>
+                    </p>
+                    <p>Easily accessible with on-street and nearby parking. Contact us for access details and site visit.</p>
+                </div>
+                <div>
+                    <h4 style="color: #1B3A5C; margin-top: 0;">Available For</h4>
+                    <ul class="room-details-list">
+                        <li>Peer support and recovery groups</li>
+                        <li>Community meetings and workshops</li>
+                        <li>Wellness & wellness workshops</li>
+                        <li>Support group meetings</li>
+                        <li>Small community gatherings</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="room-schedule-cta">
+                <p><strong>Member Portal Access:</strong> Cooperative members can schedule room time directly through the Members portal.</p>
+                <a href="contact.html" class="btn btn-primary">Request Room Time</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Resources Section -->
+    <section>
+        <div class="container">
+            <h2 style="margin-bottom: 48px;">Community Resources — Northwest Connecticut</h2>
+
+            <!-- Crisis & Immediate Help -->
+            <div class="resources-category">
+                <h3>Crisis & Immediate Help</h3>
+                <div class="resources-grid">
+                    <div class="community-resource-card">
+                        <h4>988 Suicide & Crisis Lifeline</h4>
+                        <p>24/7 support for anyone experiencing suicidal thoughts, mental health crises, or emotional distress.</p>
+                        <p class="resource-phone"><a href="tel:988">Call or text 988</a></p>
+                        <p style="font-size: 13px; color: #888;">Available 24/7</p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Connecticut 211</h4>
+                        <p>Multilingual information and referral service connecting people to health and social services.</p>
+                        <p class="resource-phone"><a href="tel:2-1-1">Call 2-1-1</a> or <a href="tel:1-800-203-1234">(800) 203-1234</a></p>
+                        <p style="font-size: 13px; color: #888;">Available 24/7, multilingual</p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Veterans Crisis Line</h4>
+                        <p>Specialized crisis support for veterans in immediate distress.</p>
+                        <p class="resource-phone"><a href="tel:988">Call 988 (press 1)</a> or <a href="sms:838255">text 838255</a></p>
+                        <p style="font-size: 13px; color: #888;">Available 24/7</p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Susan B. Anthony Project (Domestic Violence)</h4>
+                        <p>24/7 crisis support, safety planning, and resources for survivors of domestic violence.</p>
+                        <p class="resource-phone"><a href="tel:8604821331">(860) 482-7133</a></p>
+                        <p class="resource-website"><a href="https://www.sbaproject.org" target="_blank" rel="noopener">sbaproject.org</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mental Health Services -->
+            <div class="resources-category">
+                <h3>Mental Health Services</h3>
+                <div class="resources-grid">
+                    <div class="community-resource-card">
+                        <h4>Charlotte Hungerford Hospital Behavioral Health</h4>
+                        <p>Psychiatric evaluation, medication management, and inpatient and outpatient behavioral health services.</p>
+                        <p class="resource-phone"><a href="tel:8604966350">(860) 496-6350</a></p>
+                        <p class="resource-website"><a href="https://www.charlottehungerford.org" target="_blank" rel="noopener">charlottehungerford.org</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>McCall Behavioral Health Network</h4>
+                        <p>24/7 behavioral health crisis services, medication management, and mental health treatment.</p>
+                        <p class="resource-phone"><a href="tel:8604962100">(860) 496-2100</a></p>
+                        <p class="resource-website"><a href="https://www.mccallbhn.org" target="_blank" rel="noopener">mccallbhn.org</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Western CT Mental Health Network - Torrington</h4>
+                        <p>Mental health counseling and psychiatric services serving the Torrington area.</p>
+                        <p class="resource-phone"><a href="tel:8604967100">(860) 496-3700</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Community Health & Wellness Center (FQHC)</h4>
+                        <p>Federally Qualified Health Center offering mental health services on a sliding scale fee basis. Accepts Medicaid.</p>
+                        <p class="resource-website"><a href="https://www.chwctorr.org" target="_blank" rel="noopener">chwctorr.org</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>NAMI Connecticut</h4>
+                        <p>National Alliance on Mental Illness: peer support, education, and advocacy for mental health.</p>
+                        <p class="resource-phone"><a href="tel:1-800-950-6264">(800) 950-6264</a></p>
+                        <p class="resource-website"><a href="https://www.namict.org" target="_blank" rel="noopener">namict.org</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Substance Use & Recovery -->
+            <div class="resources-category">
+                <h3>Substance Use & Recovery</h3>
+                <div class="resources-grid">
+                    <div class="community-resource-card">
+                        <h4>McCall Center for Behavioral Health</h4>
+                        <p>Comprehensive addiction treatment including outpatient counseling and residential programs.</p>
+                        <p class="resource-phone"><a href="tel:8604822362">(860) 482-2362</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Litchfield County Opiate Task Force</h4>
+                        <p>Collaborative network of 60+ member organizations focused on opioid use disorder and recovery support.</p>
+                        <p class="resource-website"><a href="https://www.lcotf.org" target="_blank" rel="noopener">lcotf.org</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>AA Meetings in Torrington</h4>
+                        <p>Alcoholics Anonymous support groups available throughout the Torrington area.</p>
+                        <p class="resource-website"><a href="https://www.ct-aa.org/meetings" target="_blank" rel="noopener">ct-aa.org/meetings</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>NA Meetings (Greater Waterbury Area)</h4>
+                        <p>Narcotics Anonymous support groups serving the Greater Waterbury region including Torrington.</p>
+                        <p class="resource-website"><a href="https://www.ctna.org" target="_blank" rel="noopener">ctna.org</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Youth & Family Services -->
+            <div class="resources-category">
+                <h3>Youth & Family Services</h3>
+                <div class="resources-grid">
+                    <div class="community-resource-card">
+                        <h4>Torrington Area Youth Service Bureau</h4>
+                        <p>Free outreach counseling and support services for youth and families in the Torrington area.</p>
+                        <p class="resource-phone"><a href="tel:8604823084">(860) 482-3084</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Regional School District 6</h4>
+                        <p>School district serving the Torrington area with student support and special education services.</p>
+                        <p class="resource-website"><a href="https://www.rsd6.org" target="_blank" rel="noopener">rsd6.org</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Torrington Public Schools</h4>
+                        <p>School services including counseling, behavioral support, and family engagement programs.</p>
+                        <p class="resource-website"><a href="https://www.torrington.org/schools" target="_blank" rel="noopener">torrington.org/schools</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Senior Services -->
+            <div class="resources-category">
+                <h3>Senior Services</h3>
+                <div class="resources-grid">
+                    <div class="community-resource-card">
+                        <h4>Western CT Area Agency on Aging</h4>
+                        <p>Services and resources supporting older adults and their families in Western Connecticut.</p>
+                        <p class="resource-phone"><a href="tel:1-800-994-9422">(800) 994-9422</a></p>
+                        <p class="resource-website"><a href="https://www.wcaaa.org" target="_blank" rel="noopener">wcaaa.org</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Sullivan Senior Center</h4>
+                        <p>Community center offering programs, activities, and social engagement for seniors in Torrington.</p>
+                        <p class="resource-phone"><a href="tel:8604824151">(860) 482-4151</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Veterans Services -->
+            <div class="resources-category">
+                <h3>Veterans Services</h3>
+                <div class="resources-grid">
+                    <div class="community-resource-card">
+                        <h4>Torrington Veterans Office</h4>
+                        <p>Local resources and support services for veterans in Torrington.</p>
+                        <p class="resource-website"><a href="https://www.torringtonct.gov" target="_blank" rel="noopener">torringtonct.gov</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>VA Connecticut Health Care</h4>
+                        <p>U.S. Veterans Administration healthcare and mental health services across Connecticut.</p>
+                        <p class="resource-website"><a href="https://www.va.gov/connecticut-health-care" target="_blank" rel="noopener">va.gov/connecticut-health-care</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community & Wellness -->
+            <div class="resources-category">
+                <h3>Community & Wellness</h3>
+                <div class="resources-grid">
+                    <div class="community-resource-card">
+                        <h4>Northwestern CT YMCA</h4>
+                        <p>Community fitness, wellness programs, youth services, and community gatherings.</p>
+                        <p class="resource-phone"><a href="tel:8604893133">(860) 489-3133</a></p>
+                        <p class="resource-website"><a href="https://www.nwcty.org" target="_blank" rel="noopener">nwcty.org</a></p>
+                    </div>
+
+                    <div class="community-resource-card">
+                        <h4>Susan B. Anthony Project</h4>
+                        <p>Community education, support, and advocacy resources related to domestic violence awareness and prevention.</p>
+                        <p class="resource-website"><a href="https://www.sbaproject.org" target="_blank" rel="noopener">sbaproject.org</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partner With Us Section -->
+    <section class="partner-section">
+        <div class="container">
+            <h3>Partner With Us</h3>
+            <p>Waypoint is interested in building strong relationships with community organizations. We're open to referral partnerships, co-located services, workshop collaboration, and resource sharing.</p>
+            <p>If you represent a community organization and are interested in exploring how we might work together to better serve Northwest Connecticut, we'd love to connect.</p>
+            <div class="partner-cta">
+                <a href="contact.html" class="btn btn-primary btn-lg">Get in Touch</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner">
+        <div class="container">
+            <h2>Need Support?</h2>
+            <p>Whether you're seeking individual care or community resources, Waypoint is here to help.</p>
+            <div class="cta-button-group">
+                <a href="https://waypointcooperative.clientsecure.me/" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Schedule an Appointment</a>
+                <a href="tel:8603095980" class="btn btn-secondary btn-lg">Call (860) 309-5980</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Waypoint Cooperative</h4>
+                    <p>
+                        40 Main Street, Suite 16<br>
+                        Torrington, CT 06790<br>
+                        <a href="tel:8603095980">(860) 309-5980</a>
+                    </p>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="programs.html">Programs</a></li>
+                        <li><a href="community.html">Community</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="services.html#individual">Individual Therapy</a></li>
+                        <li><a href="services.html#couples">Couples & Family</a></li>
+                        <li><a href="services.html#medication">Medication Management</a></li>
+                        <li><a href="services.html#group">Group Therapy</a></li>
+                        <li><a href="services.html#telehealth">Telehealth</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="programs.html">Group Programs</a></li>
+                        <li><a href="community.html">Community Resources</a></li>
+                        <li><a href="contact.html">New Client Intake</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Waypoint Cooperative, LLC. All rights reserved.</p>
+                <p class="footer-compliance">NPI: 1942013909 | Taxonomy: 261QM0801X (Mental Health Clinic/Center)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SimplePractice Appointment Request Widget -->
+    <div class="spwidget-button-wrapper" style="display:none;"><a href="https://waypointcooperative.clientsecure.me" class="spwidget-button" data-spwidget-scope-id="a72067dc-7f8e-4ed4-b8d8-39ea630ac58b" data-spwidget-scope-uri="waypointcooperative" data-spwidget-application-id="7c72cb9f9a9b913654bb89d6c7b4e71a77911b30192051da35384b4d0c6d505b" data-spwidget-type="OAR" data-spwidget-scope-global data-spwidget-autobind>Request Appointment</a></div>
+    <script src="https://widget-cdn.simplepractice.com/assets/integration-1.0.js"></script>
+<script>
+      // Uncomment and add your client ID to activate the booking widget:
+      // var defined = defined || {};
+      // defined.spWidget = new SimplePracticeWidget({ practice_id: 'YOUR_SP_PRACTICE_ID' });
+    </script>
+
+    <!-- Floating Book Now CTA -->
+    <a href="https://waypointcooperative.clientsecure.me/" target="_blank" rel="noopener" class="floating-cta" aria-label="Request Appointment">
+        <span class="floating-cta-icon">📅</span>
+        <span class="floating-cta-text">Book Now</span>
+    </a>
+
+    <script src="script.js"></script>
+</body>
+</html>
