@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NE Adventures — AJ's Northeast Outdoor Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+:root {
+  --color-primary: #22c55e;
+  --color-primary-dark: #16a34a;
+  --color-bg-dark: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-border: #334155;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-alert-red: #ef4444;
+  --color-alert-yellow: #f59e0b;
+  --color-alert-blue: #3b82f6;
+  --sidebar-width: 400px;
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--color-bg-dark);
+  color: var(--color-text-primary);
+}
+
+#app {
+  display: flex;
+  height: 100vh;
+}
+
+#sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-bg-secondary);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border);
+  overflow: hidden;
+  position: relative;
+  z-index: 999;
+}
+
+#sidebar.hidden {
+  transform: translateX(-100%);
+}
+
+#map-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
+.sidebar-overlay.active {
+  display: block;
+}
+
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 18px;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-btn:hover {
+  background: var(--color-border);
+  border-color: var(--color-primary);
+}
+
+.sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  z-index: 1000;
+}
+
+.sidebar-close-btn:hover {
+  color: var(--color-primary);
+}
+
+.header {
+  padding: 16px;
+  background: linear-gradient(135deg, #1a4731, #0c4a6e);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.header h1 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.header p {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.stats-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+}
+
+.stat {
+  text-align: center;
+  min-width: 48px;
+}
+
+.stat-num {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.stat-label {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.refresh-date {
+  font-size: 9px;
+  color: var(--color-border);
+  margin-left: auto;
+}
+
+.search-box {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #475569;
+  background: var(--color-bg-dark);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  outline: none;
+  min-height: 44px;
+  -webkit-appearance: none;
+}
+
+.search-box input:focus {
+  border-color: var(--color-primary);
+}
+
+.search-box input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.filter-row label {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  display: block;
+  margin-bottom: 2px;
+  width: 100%;
+}
+
+.filter-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.filter-col select {
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 6px;
+  border: 1px solid #475569;
+  background: var(--color-bg-dark);
+  color: var(--color-text-primary);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+
+.filter-col select:focus {
+  border-color: var(--color-primary);
+}
+
+.reset-filters-btn {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.reset-filters-btn button {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  transition: all var(--transition-speed);
+}
+
+.reset-filters-btn button:hover {
+  background: var(--color-primary);
+  color: var(--color-bg-dark);
+}
+
+.layers-container {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+  max-height: 280px;
+}
+
+.activity-group {
+  margin-bottom: 12px;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 0;
+  user-select: none;
+}
+
+.group-toggle {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  border-radius: 3px;
+  border: 1px solid #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  cursor: pointer;
+  background: var(--color-bg-dark);
+}
+
+.group-toggle.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.group-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  flex: 1;
+}
+
+.group-count {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.group-items {
+  margin-left: 0;
+  max-height: 500px;
+  overflow: hidden;
+  transition: max-height var(--transition-speed);
+}
+
+.group-items.collapsed {
+  max-height: 0;
+}
+
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: background var(--transition-speed);
+  min-height: 40px;
+}
+
+.layer-item:hover {
+  background: rgba(34, 197, 94, 0.1);
+  color: #fff;
+}
+
+.layer-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.layer-check {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 9px;
+  cursor: pointer;
+  background: var(--color-bg-dark);
+  transition: all var(--transition-speed);
+}
+
+.layer-check:hover {
+  border-color: var(--color-primary);
+}
+
+.layer-check.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.result-count {
+  padding: 8px 16px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.results {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 12px;
+}
+
+.result-card {
+  background: var(--color-bg-dark);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.result-card:active,
+.result-card:hover {
+  border-color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.result-card.alert-yellow {
+  border-left: 3px solid var(--color-alert-yellow);
+}
+
+.result-card.alert-red {
+  border-left: 3px solid var(--color-alert-red);
+  opacity: 0.85;
+}
+
+.result-card.alert-blue {
+  border-left: 3px solid var(--color-alert-blue);
+}
+
+.result-card.secret {
+  border-left: 3px solid var(--color-alert-red);
+  background: linear-gradient(90deg, #1a0a0a 0%, var(--color-bg-dark) 30%);
+}
+
+.result-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.result-type {
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.result-detail {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.result-alert {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.alert-bg-yellow {
+  background: #78350f;
+  color: #fbbf24;
+}
+
+.alert-bg-red {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+.alert-bg-blue {
+  background: #1e3a5f;
+  color: #93c5fd;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.nav-link {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.nav-drive {
+  background: var(--color-alert-blue);
+}
+
+.nav-transit {
+  background: var(--color-primary);
+}
+
+.nav-walk {
+  background: var(--color-alert-yellow);
+}
+
+.nav-drive:hover,
+.nav-drive:active {
+  background: #2563eb;
+  opacity: 0.9;
+}
+
+.nav-transit:hover,
+.nav-transit:active {
+  background: var(--color-primary-dark);
+  opacity: 0.9;
+}
+
+.nav-walk:hover,
+.nav-walk:active {
+  background: #d97706;
+  opacity: 0.9;
+}
+
+.popup-content {
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 320px;
+}
+
+.popup-content h3 {
+  font-size: 14px;
+  color: #1e293b;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.popup-content .p-type {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.popup-content .p-detail {
+  font-size: 12px;
+  color: #334155;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.popup-content .p-nav {
+  display: inline-block;
+  margin: 2px 2px 2px 0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 11px;
+  color: #fff;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  white-space: nowrap;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.p-nav-drive {
+  background: var(--color-alert-blue);
+}
+
+.p-nav-drive:hover {
+  background: #2563eb;
+}
+
+.p-nav-transit {
+  background: var(--color-primary);
+}
+
+.p-nav-transit:hover {
+  background: var(--color-primary-dark);
+}
+
+.p-nav-walk {
+  background: var(--color-alert-yellow);
+}
+
+.p-nav-walk:hover {
+  background: #d97706;
+}
+
+.map-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-btn {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid #475569;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  font-weight: 500;
+  min-width: 44px;
+  min-height: 44px;
+  transition: all var(--transition-speed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-btn:hover {
+  background: var(--color-border);
+  border-color: var(--color-primary);
+}
+
+.map-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.home-btn {
+  position: absolute;
+  top: 10px;
+  left: 60px;
+  z-index: 1000;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid #475569;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  min-width: 44px;
+  min-height: 44px;
+  transition: all var(--transition-speed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-btn:hover {
+  background: var(--color-border);
+  border-color: var(--color-primary);
+}
+
+.map-badge {
+  position: absolute;
+  bottom: 20px;
+  left: 10px;
+  z-index: 1000;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: none;
+}
+
+.map-badge.active {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column;
+  }
+
+  #sidebar {
+    width: 100%;
+    height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    transform: translateX(0);
+    transition: transform var(--transition-speed) ease-in-out;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+  }
+
+  #sidebar.hidden {
+    transform: translateY(100%);
+  }
+
+  #map-container {
+    height: 50vh;
+  }
+
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  .sidebar-close-btn {
+    display: block;
+  }
+
+  .map-controls {
+    bottom: 20px;
+    right: 10px;
+    top: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: calc(100% - 20px);
+    justify-content: flex-end;
+  }
+
+  .home-btn {
+    position: fixed;
+    bottom: 80px;
+    left: auto;
+    right: 10px;
+    top: auto;
+  }
+
+  .map-badge {
+    display: block;
+  }
+
+  .layers-container {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  #sidebar {
+    height: 100%;
+    bottom: auto;
+    top: 0;
+    z-index: 1000;
+  }
+
+  #sidebar.hidden {
+    transform: translateX(-100%);
+  }
+
+  #map-container {
+    height: 100%;
+  }
+
+  .hamburger-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .sidebar-close-btn {
+    display: block;
+  }
+
+  .filter-col {
+    min-width: 100%;
+  }
+
+  .filter-row {
+    flex-direction: column;
+  }
+
+  .filter-row label {
+    width: 100%;
+    padding: 0;
+  }
+
+  .result-card {
+    padding: 14px;
+  }
+
+  .result-name {
+    font-size: 14px;
+  }
+
+  .layers-container {
+    max-height: 300px;
+  }
+
+  .search-box input,
+  .filter-col select,
+  .reset-filters-btn button,
+  .map-btn,
+  .home-btn,
+  .nav-link {
+    min-height: 44px;
+  }
+
+  .home-btn {
+    bottom: 20px;
+    right: 10px;
+  }
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+#map-container {
+  overflow: hidden;
+}
+
+.leaflet-control {
+  z-index: 999;
+}
+
+.leaflet-popup {
+  z-index: 1002;
+}
+</style>
+</head>
+<body>
+
+<div class="hamburger-btn" id="hamburger-btn">☰</div>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div id="app">
+  <div id="sidebar">
+    <button class="sidebar-close-btn" id="sidebar-close">✕</button>
+    <div class="header">
+      <h1>NE Adventures</h1>
+      <p>AJ Anderson | Woodbridge, CT | 309 POIs across 6 states</p>
+    </div>
+    <div class="stats-bar" id="stats"></div>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Search spots, trails, towns...">
+    </div>
+    <div class="filter-row">
+      <div class="filter-col">
+        <label>Activity Group</label>
+        <select id="activity-filter">
+          <option value="">All Activities</option>
+          <option value="Winter">Winter</option>
+          <option value="Climbing">Climbing</option>
+          <option value="Cycling">Cycling</option>
+          <option value="Water">Water</option>
+          <option value="Trail">Trail</option>
+          <option value="Overland">Overland</option>
+          <option value="Food & Drink">Food & Drink</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="filter-col">
+        <label>State</label>
+        <select id="state-filter">
+          <option value="">All States</option>
+          <option value="CT">CT</option>
+          <option value="MA">MA</option>
+          <option value="VT">VT</option>
+          <option value="NH">NH</option>
+          <option value="ME">ME</option>
+          <option value="NY">NY</option>
+          <option value="RI">RI</option>
+          <option value="PA">PA</option>
+        </select>
+      </div>
+    </div>
+    <div class="reset-filters-btn">
+      <button id="reset-btn">Reset Filters</button>
+    </div>
+    <div class="layers-container" id="layers"></div>
+    <div class="result-count" id="result-count"></div>
+    <div class="results" id="results"></div>
+  </div>
+  <div id="map-container">
+    <div id="map"></div>
+    <div class="map-badge" id="map-badge"></div>
+  </div>
+</div>
+
+<script>
+const HOME_LAT = 41.2788, HOME_LNG = -72.9884;
+
+const ACTIVITY_GROUPS = {
+  'Winter': ['Ski Resorts', 'Backcountry Ski', 'Ice Climbing'],
+  'Climbing': ['Rock Climbing', 'Ice Climbing'],
+  'Cycling': ['Gravel Biking', 'Mountain Biking'],
+  'Water': ['Fly Fishing', 'Swimming Holes', 'Paddling/Kayak', 'Surf'],
+  'Trail': ['Trail Running', 'Hiking', 'Waterfalls', 'Scenic Drives'],
+  'Overland': ['Overland/4x4', 'Camping'],
+  'Food & Drink': ['Breweries/Beer', 'Food/Restaurants'],
+  'Other': ['Gear Shops', 'Events/Festivals', 'Secret Spots']
+};
+
+const LAYERS = {
+  'Ski Resorts': {color: '#3b82f6', icon: '⛷️', visible: true},
+  'Backcountry Ski': {color: '#60a5fa', icon: '🎿', visible: true},
+  'Ice Climbing': {color: '#06b6d4', icon: '🧊', visible: true},
+  'Rock Climbing': {color: '#f59e0b', icon: '🧗', visible: true},
+  'Trail Running': {color: '#22c55e', icon: '🏃', visible: true},
+  'Gravel Biking': {color: '#84cc16', icon: '🚴', visible: true},
+  'Mountain Biking': {color: '#65a30d', icon: '🚵', visible: false},
+  'Fly Fishing': {color: '#14b8a6', icon: '🎣', visible: true},
+  'Swimming Holes': {color: '#0ea5e9', icon: '🏊', visible: false},
+  'Waterfalls': {color: '#67e8f9', icon: '💧', visible: false},
+  'Hiking': {color: '#10b981', icon: '🥾', visible: true},
+  'Paddling/Kayak': {color: '#0891b2', icon: '🛶', visible: false},
+  'Camping': {color: '#a3e635', icon: '⛺', visible: false},
+  'Overland/4x4': {color: '#f97316', icon: '🛻', visible: true},
+  'Gear Shops': {color: '#eab308', icon: '🏪', visible: false},
+  'Breweries/Beer': {color: '#d946ef', icon: '🍺', visible: false},
+  'Food/Restaurants': {color: '#ec4899', icon: '🍽️', visible: false},
+  'Surf': {color: '#38bdf8', icon: '🏄', visible: false},
+  'Scenic Drives': {color: '#a78bfa', icon: '🛣️', visible: false},
+  'Events/Festivals': {color: '#f472b6', icon: '🎪', visible: false},
+  'Secret Spots': {color: '#ef4444', icon: '🤫', visible: false}
+};
+
+const CLOSURES = [
+  {match: 'Tuckerman', msg: '⚠️ Tuckerman Ravine: Seasonal—check USFS avalanche advisory before ascending', severity: 'yellow'},
+  {match: 'Katahdin', msg: '⚠️ Knife Edge: Exposed alpine—check weather, no dogs on AT', severity: 'yellow'},
+  {match: 'Franconia', msg: '⚠️ Franconia Ridge: Above treeline exposure. Winter: crampons+axe required', severity: 'yellow'},
+  {match: 'Cathedral', msg: '📋 Cathedral Ledge: Check NHIAA conditions before leading. Ice: Nov-Mar', severity: 'blue'},
+  {match: 'Rumney', msg: '📋 Rumney: Some crags on private land—respect seasonal closures posted at kiosk', severity: 'blue'},
+  {match: 'Champlain', msg: '⚠️ Precipice Trail: Closed spring/summer for peregrine falcon nesting (Apr-Aug)', severity: 'yellow'},
+  {match: 'Smugglers', msg: '📋 Smugglers\' Notch Rd (Rte 108): CLOSED Nov-May between Stowe & Jeffersonville', severity: 'red'},
+  {match: 'Kancamagus', msg: '📋 Kanc Highway: Open year-round but expect ice/snow Nov-Apr. No gas stations.', severity: 'blue'},
+  {match: 'Whiteface', msg: '📋 Whiteface Veterans Memorial Hwy: Closed late fall through late spring', severity: 'blue'},
+  {match: 'Mt Washington Auto', msg: '⚠️ Mt Washington Auto Road: Seasonal—typically May-Oct. Check conditions.', severity: 'yellow'}
+];
+
+const LOCATIONS = [
+{name:'Killington Peak',layer:'Ski Resorts',lat:43.6174,lng:-72.803,state:'VT',detail:'Vermont\'s largest ski resort with 22 lifts and 140+ trails. Best for variety, from beginner terrain to steep gullies. Peak season Dec-Mar.'},
+{name:'Stowe Mountain Resort',layer:'Ski Resorts',lat:44.4776,lng:-72.7164,state:'VT',detail:'Two mountains (Mt. Mansfield and Spruce Peak) with 2,360 vertical feet. Iconic East Coast resort, excellent tree skiing. Dec-Mar.'},
+{name:'Sugarbush Resort',layer:'Ski Resorts',lat:44.1328,lng:-72.9234,state:'VT',detail:'Two peaks with 2,600 vertical feet. Known for backcountry access and glades. Great for intermediate-advanced skiers. Dec-Mar.'},
+{name:'Jay Peak Resort',layer:'Ski Resorts',lat:44.9103,lng:-72.5167,state:'VT',detail:'Northernmost VT resort known for wet, heavy snow. 2,153 vertical feet with strong tree and glade skiing. Dec-Mar.'},
+{name:'Stratton Mountain',layer:'Ski Resorts',lat:43.0988,lng:-73.1122,state:'VT',detail:'Southern VT ski area with 2,003 vertical feet. Consistent snow, excellent grooming, great for families. Dec-Mar.'},
+{name:'Okemo Mountain Resort',layer:'Ski Resorts',lat:43.4045,lng:-72.7323,state:'VT',detail:'2,150 vertical feet with excellent snowmaking. Known for consistent conditions and family-friendly terrain. Dec-Mar.'},
+{name:'Loon Mountain',layer:'Ski Resorts',lat:43.685,lng:-71.645,state:'NH',detail:'2,100 vertical feet in the White Mountains. Great terrain parks and mixed difficulty. 90 minutes from Boston. Dec-Mar.'},
+{name:'Sunday River',layer:'Ski Resorts',lat:44.4656,lng:-70.8634,state:'ME',detail:'Maine\'s largest resort with 8 peaks and 2,340 vertical feet. Wide variety of terrain. Close to Portland. Dec-Mar.'},
+{name:'Sugarloaf',layer:'Ski Resorts',lat:45.0317,lng:-70.3133,state:'ME',detail:'Maine\'s highest ski resort at 4,237 ft with 2,820 vertical feet. Long ski season, snowfields. Advanced skiers. Nov-May.'},
+{name:'Whiteface Mountain',layer:'Ski Resorts',lat:44.1657,lng:-71.4625,state:'NY',detail:'Olympic downhill venue with 3,430 vertical feet, most extreme terrain in the East. World-class resort. Dec-Mar.'},
+{name:'Gore Mountain',layer:'Ski Resorts',lat:44.2641,lng:-71.2925,state:'NY',detail:'New York\'s largest resort with 2,537 vertical feet and 110+ trails. Excellent for mixed abilities. Dec-Mar.'},
+{name:'Mad River Glen',layer:'Ski Resorts',lat:44.1414,lng:-72.8878,state:'VT',detail:'Steep, natural terrain. Single chairlift, no snowmaking. Classic New England ski area for purists. Dec-Mar.'},
+{name:'Bolton Valley',layer:'Ski Resorts',lat:44.3694,lng:-72.6667,state:'VT',detail:'High elevation (3,333 ft summit) ensures good snow. Quiet, less crowded. Night skiing available. Dec-Mar.'},
+{name:'Cannon Mountain',layer:'Ski Resorts',lat:44.1564,lng:-71.6984,state:'NH',detail:'Steep, challenging terrain with 2,180 vertical feet. Classic tramway. Great for advanced skiers. Dec-Mar.'},
+{name:'Wildcat Mountain',layer:'Ski Resorts',lat:44.2597,lng:-71.2375,state:'NH',detail:'Steep gully skiing with 2,112 vertical feet. Incredible views of Mt. Washington. Challenging terrain. Dec-Mar.'},
+{name:'Tuckerman Ravine',layer:'Backcountry Ski',lat:44.2704,lng:-71.3035,state:'NH',detail:'Legendary steep backcountry gully on Mt. Washington\'s east face. Spring skiing is epic. Requires mountaineering skills. Mar-May.'},
+{name:'Mt. Mansfield Backcountry',layer:'Backcountry Ski',lat:44.5292,lng:-72.8067,state:'VT',detail:'Multiple lines from Vermont\'s highest peak. Smugglers\' Notch area has terrain for all levels. Winter/spring.'},
+{name:'Bolton Backcountry',layer:'Backcountry Ski',lat:44.3694,lng:-72.6667,state:'VT',detail:'Accessible gully and forest skiing. Good intro to backcountry. Natural run-out zones. Winter-spring.'},
+{name:'Smugglers Notch Backcountry',layer:'Backcountry Ski',lat:44.4981,lng:-72.8389,state:'VT',detail:'Alpine bowl skiing between Mt. Mansfield and Sterling Peak. Stunning views. Moderate to advanced. Winter-spring.'},
+{name:'Mount Katahdin BC Routes',layer:'Backcountry Ski',lat:45.9043,lng:-68.9217,state:'ME',detail:'Maine\'s highest peak with multiple descent options. High alpine terrain, significant avalanche risk. Expert only. Mar-Apr.'},
+{name:'Presidentials Backcountry',layer:'Backcountry Ski',lat:44.25,lng:-71.32,state:'NH',detail:'Madison Traverse, Gulf of Slides, Great Gulf. Alpine terrain with extreme exposure. Expert level. Winter-spring.'},
+{name:'Teardrop Trail Backcountry',layer:'Backcountry Ski',lat:43.1972,lng:-71.2892,state:'NH',detail:'Spring skiing classic on Carrigain. Pleasant forested gully. Good introduction to backcountry. Mar-May.'},
+{name:'Burnt Mountain BC',layer:'Backcountry Ski',lat:44.0653,lng:-71.7572,state:'NH',detail:'Accessible gully skiing near Waterville Valley. Good intermediate backcountry option. Winter-spring.'},
+{name:'Frankenstein Cliff',layer:'Ice Climbing',lat:43.8661,lng:-71.4003,state:'NH',detail:'Classic waterfall ice just south of Crawford Notch. Multiple routes WI 2-4. Popular, accessed via Arethusa Falls Trail. Jan-Mar.'},
+{name:'Cathedral Ledge Ice',layer:'Ice Climbing',lat:44.0408,lng:-71.1122,state:'NH',detail:'Fantastic ice climbs in North Conway. Multi-pitch options WI 2-4. Easy approach. Best Jan-Feb.'},
+{name:'Smugglers Notch Ice',layer:'Ice Climbing',lat:44.4981,lng:-72.8389,state:'VT',detail:'Multiple ice features between Mt. Mansfield and Sterling Peak. WI 2-3 routes. Scenic alpine setting. Jan-Mar.'},
+{name:'Lake Willoughby Ice',layer:'Ice Climbing',lat:44.6522,lng:-72.0503,state:'VT',detail:'Gorgeous ice in remote Northeast Kingdom location. Haystack Waterfall and other formations. WI 2-4. Jan-Mar.'},
+{name:'Rumney Ice Climbing',layer:'Ice Climbing',lat:43.8021,lng:-71.83,state:'NH',detail:'Multiple ice flows on Rattlesnake Mountain. WI 2-4 routes. Popular winter destination. Jan-Mar.'},
+{name:'Chaplin Quarry',layer:'Ice Climbing',lat:41.8231,lng:-72.3231,state:'CT',detail:'Frozen waterfall near Chaplin, CT. WI 2-3, easily accessible from central CT. Jan-Feb.'},
+{name:'Ragged Mountain Ice',layer:'Ice Climbing',lat:41.7506,lng:-72.6278,state:'CT',detail:'Rock climbing area with occasional ice. Scenic Wallingford location. WI 2-2+. Jan-Feb.'},
+{name:'Chapel Pond Canyon',layer:'Ice Climbing',lat:43.7475,lng:-71.8678,state:'NY',detail:'Popular Adirondack ice climbing with scenic lake setting. WI 2-3 routes. Jan-Mar.'},
+{name:'Rumney Rock Climbing',layer:'Rock Climbing',lat:43.8021,lng:-71.83,state:'NH',detail:'Hundreds of routes on Rattlesnake Mountain. 5.0-5.12+ grades. Popular trad and sport climbing destination. Year-round.'},
+{name:'Cathedral Ledge Rock',layer:'Rock Climbing',lat:44.0408,lng:-71.1122,state:'NH',detail:'Epicenter of NH trad climbing. Multi-pitch routes, splitter cracks, all grades. North Conway. Year-round.'},
+{name:'Shawangunks (Gunks)',layer:'Rock Climbing',lat:41.7494,lng:-74.4544,state:'NY',detail:'Iconic NE climbing destination with 5.5-5.13+ routes. Conglomerate rock, 1.5 hours from NYC. Year-round.'},
+{name:'Ragged Mountain',layer:'Rock Climbing',lat:41.7506,lng:-72.6278,state:'CT',detail:'Quartzite outcrops near Wallingford. 5.4-5.10 routes. Beautiful views. Spring-fall.'},
+{name:'Whitehorse Ledge',layer:'Rock Climbing',lat:44.0375,lng:-71.1089,state:'NH',detail:'North Conway classic with 5.0-5.11+ routes. Long multi-pitch climbs. Scenic. Spring-fall.'},
+{name:'Farley Ledges',layer:'Rock Climbing',lat:42.3958,lng:-72.0514,state:'MA',detail:'Granite cliffs in the Berkshires. 5.4-5.10 routes. Beautiful forest setting. Spring-fall.'},
+{name:'Crow Hill',layer:'Rock Climbing',lat:42.3856,lng:-73.2481,state:'NY',detail:'Shale cliffs in the Mohonk Preserve. 5.6-5.11 trad routes. Stunning Hudson Valley views. Spring-fall.'},
+{name:'Clifton Crag',layer:'Rock Climbing',lat:42.2264,lng:-73.7878,state:'NY',detail:'Traprock cliffs near Kent, CT. 5.3-5.10 routes. Good access. Spring-fall.'},
+{name:'Rattlesnake Mountain',layer:'Rock Climbing',lat:43.8021,lng:-71.83,state:'NH',detail:'Home to Rumney rock climbing. Hundreds of routes 5.0-5.12+. Popular destination. Year-round.'},
+{name:'Sleeping Giant Trail Running',layer:'Trail Running',lat:41.4211,lng:-72.8989,state:'CT',detail:'32-mile trail network in Hamden. Tower Trail is iconic. Easy to moderate, great views. Year-round.'},
+{name:'West Rock Ridge Trail Running',layer:'Trail Running',lat:41.3447,lng:-72.9639,state:'CT',detail:'4.5-mile ridge run near New Haven. Significant elevation gain. Steep sections. Popular with local runners. Year-round.'},
+{name:'Mohawk Trail',layer:'Trail Running',lat:42.4853,lng:-72.8142,state:'MA',detail:'27-mile scenic mountain trail through western Massachusetts. Moderate to challenging. Beautiful fall foliage. Spring-fall.'},
+{name:'Long Trail Vermont',layer:'Trail Running',lat:44.0,lng:-72.8,state:'VT',detail:'272-mile trail from Canada to Massachusetts. Run sections or the whole thing. Varies from easy to very hard. Summer-fall.'},
+{name:'Breakneck Ridge',layer:'Trail Running',lat:41.9011,lng:-73.9561,state:'NY',detail:'1.3-mile steep ascent near Cold Spring. Incredible Hudson River views. Runnable but technical. Year-round.'},
+{name:'Bear Mountain Trail',layer:'Trail Running',lat:41.3122,lng:-73.4744,state:'CT',detail:'Short steep climb near Kent, CT. Popular local trail. Easy to moderate. Year-round.'},
+{name:'Mount Tom Trail',layer:'Trail Running',lat:42.1239,lng:-72.6014,state:'MA',detail:'3.3-mile run to 1,202-ft summit in Holyoke Range. Moderate difficulty. Great views. Year-round.'},
+{name:'Mount Greylock Trail Running',layer:'Trail Running',lat:42.6352,lng:-73.1656,state:'MA',detail:'3,491-ft peak with multiple route options. Bellows Pipe Trail is steep and challenging. Year-round.'},
+{name:'Harriman State Park Trails',layer:'Trail Running',lat:41.2142,lng:-74.1589,state:'NY',detail:'50,000 acres with hundreds of miles of trails. Mixed terrain, easy to hard options. Year-round.'},
+{name:'Kingdom Trails',layer:'Gravel Biking',lat:44.6028,lng:-72.0089,state:'VT',detail:'100+ miles of gravel/dirt trails in East Burke. Network system, all levels. Scenic Northeast Kingdom. Spring-fall.'},
+{name:'Delaware & Lehigh Canal Trail',layer:'Gravel Biking',lat:40.9242,lng:-75.2711,state:'PA',detail:'60-mile towpath along canal. Mostly flat, crushed stone. Great for all levels. Lehighton to Bristol. Spring-fall.'},
+{name:'Farmington Canal Heritage Trail',layer:'Gravel Biking',lat:41.8083,lng:-72.7656,state:'CT',detail:'26-mile paved/crushed stone trail from Northampton MA to New Haven CT. Flat, easy, scenic. Spring-fall.'},
+{name:'Airline Trail Connecticut',layer:'Gravel Biking',lat:41.6122,lng:-72.2389,state:'CT',detail:'17-mile former railroad bed trail. Mostly crushed stone, easy. Near Willimantic. Year-round.'},
+{name:'Vermont Gravel Roads Network',layer:'Gravel Biking',lat:44.1,lng:-72.7,state:'VT',detail:'Hundreds of miles of beautiful gravel roads throughout VT. Varies by route. Scenic and remote. Spring-fall.'},
+{name:'NEMBA CT Trails',layer:'Gravel Biking',lat:41.7,lng:-72.8,state:'CT',detail:'Network of bike trails throughout CT. Mixed terrain, fun for gravel/hardtail. Year-round.'},
+{name:'Millstone Hill Vermont',layer:'Gravel Biking',lat:44.6667,lng:-72.5667,state:'VT',detail:'Epic gravel climbing route in Northeast Kingdom. Old stone roads, steep sections. 2,000+ ft elevation gain. Spring-fall.'},
+{name:'Franconia Ridge Gravel',layer:'Gravel Biking',lat:44.15,lng:-71.7,state:'NH',detail:'Forest service roads around Franconia Notch. Scenic White Mountains. Mixed terrain. Summer.'},
+{name:'Mad River Glen Backcountry Roads',layer:'Gravel Biking',lat:44.1414,lng:-72.8878,state:'VT',detail:'Old logging roads and backcountry routes near Mad River. Technical, fun riding. Spring-fall.'},
+{name:'Highland Mountain Bike Park',layer:'Mountain Biking',lat:43.9242,lng:-71.65,state:'NH',detail:'250+ acres of lift-served mountain biking near Plymouth. All levels. Shuttle service available. June-Oct.'},
+{name:'Millstone Trails',layer:'Mountain Biking',lat:44.6667,lng:-72.5667,state:'VT',detail:'70+ miles of singletrack in Northeast Kingdom. Expert and intermediate trails. Steep descents, technical. Summer.'},
+{name:'Thunder Mountain',layer:'Mountain Biking',lat:44.2042,lng:-72.6708,state:'VT',detail:'Epic singletrack near Pownal, VT. Steep climbing, fun descents. All-mountain riding. Summer.'},
+{name:'Carvins Cove',layer:'Mountain Biking',lat:37.4014,lng:-79.8425,state:'VA',detail:'Well-developed trail system near Roanoke. 30+ miles, mixed difficulty. Beautiful lake setting. Year-round.'},
+{name:'Raystown Lake',layer:'Mountain Biking',lat:40.6222,lng:-77.5056,state:'PA',detail:'Multi-use trail system around large reservoir. 60+ miles of trails. All levels. Year-round.'},
+{name:'Trumbull MTB Trails',layer:'Mountain Biking',lat:41.25,lng:-73.25,state:'CT',detail:'Network of trails in northwest CT. Technical New England rock. All levels. Year-round.'},
+{name:'Rockland Preserve Trails',layer:'Mountain Biking',lat:41.35,lng:-72.95,state:'CT',detail:'Protected trail system near New Haven. Diverse terrain, moderate difficulty. Year-round.'},
+{name:'Bear Mountain Networks',layer:'Mountain Biking',lat:41.4,lng:-73.3,state:'CT',detail:'Trail network near Kent, CT. Mixed terrain, moderate to advanced. Beautiful northwest CT. Year-round.'},
+{name:'Housatonic River',layer:'Fly Fishing',lat:41.8214,lng:-73.2256,state:'CT',detail:'Excellent trout stream with 10+ miles of productive fly water. West Cornwall TMA, fly-fishing only section. Mar-Oct.'},
+{name:'Farmington River',layer:'Fly Fishing',lat:41.9217,lng:-72.6956,state:'CT',detail:'Free-flowing tailwater section below dam. Brown and rainbow trout. Match hatches for best success. Year-round.'},
+{name:'Battenkill River',layer:'Fly Fishing',lat:43.15,lng:-73.2667,state:'VT',detail:'Vermont\'s most famous trout stream. Spring creeks, hatches, selective fish. Beautiful valley. Apr-Oct.'},
+{name:'Swift River',layer:'Fly Fishing',lat:42.4328,lng:-72.3578,state:'MA',detail:'Cold, clear New England stream. Rainbow and brown trout. Small flies work best. Year-round.'},
+{name:'Deerfield River',layer:'Fly Fishing',lat:42.5569,lng:-72.8119,state:'MA',detail:'Tailwater fishery with consistent flows. Brown trout. Good hatches. Scenic Deerfield Valley. Mar-Oct.'},
+{name:'West Branch Delaware',layer:'Fly Fishing',lat:42.1017,lng:-74.9175,state:'NY',detail:'World-famous fly fishing stream. Huge brown trout, selective fish. Technical casting required. Apr-Nov.'},
+{name:'Esopus Creek',layer:'Fly Fishing',lat:42.1689,lng:-74.3156,state:'NY',detail:'Catskill classic with 24 miles of public water. Brown trout, good spring creek hatches. Spring-fall.'},
+{name:'Ausable River',layer:'Fly Fishing',lat:44.5097,lng:-71.8103,state:'NY',detail:'Adirondack stream with good trout populations. East Branch and West Branch. May-Oct.'},
+{name:'Androscoggin River',layer:'Fly Fishing',lat:44.4167,lng:-71.5,state:'NH',detail:'Large river with brown trout. Near Berlin, NH. Good June-Sept flows. Year-round fishing.'},
+{name:'Kennebec River',layer:'Fly Fishing',lat:45.2833,lng:-69.6833,state:'ME',detail:'Maine river with salmon and trout. Tailwater section productive. June-Sept best.'},
+{name:'Rapid River',layer:'Fly Fishing',lat:45.1756,lng:-71.2239,state:'ME',detail:'Legendary Maine salmon river. Scenic Rangeley Lakes region. Catch-and-release. June-Oct.'},
+{name:'Willowemoc Creek',layer:'Fly Fishing',lat:42.2061,lng:-74.5764,state:'NY',detail:'Catskills stream with brown trout. Spring creeks sections. Selective fish. Good hatches. Apr-Oct.'},
+{name:'Warren Falls',layer:'Swimming Holes',lat:44.0703,lng:-72.8428,state:'VT',detail:'Beautiful swimming hole on Mad River with small waterfall. Cool water. Popular summer destination. June-Sept.'},
+{name:'Buttermilk Falls',layer:'Swimming Holes',lat:42.4733,lng:-72.5569,state:'MA',detail:'Series of cascades near Williamsburg. Natural pools for swimming. Easy access. June-Aug.'},
+{name:'Natural Stone Bridge',layer:'Swimming Holes',lat:42.9,lng:-74.27,state:'NY',detail:'Unique natural marble arch with swimming holes. Scenic gorge hike. Underground river. June-Aug.'},
+{name:'Diana\'s Baths',layer:'Swimming Holes',lat:44.0681,lng:-71.1539,state:'NH',detail:'Series of cascades and pools in Bartlett near North Conway. Easy 0.5-mile hike. June-Aug.'},
+{name:'Bash Bish Falls',layer:'Swimming Holes',lat:42.1583,lng:-73.45,state:'MA',detail:'Single 80-ft drop with pool. Beautiful Berkshires location. Swimming prohibited but popular. June-Aug.'},
+{name:'Kent Falls',layer:'Swimming Holes',lat:41.7606,lng:-73.2978,state:'CT',detail:'250-ft cascade with pools for swimming. Easy state park access. Popular in summer. June-Aug.'},
+{name:'Indian Well',layer:'Swimming Holes',lat:41.8153,lng:-73.2658,state:'CT',detail:'Natural pool on Indian Well Brook near Kent. Scenic gorge. Free access. June-Aug.'},
+{name:'Wadsworth Falls',layer:'Swimming Holes',lat:41.8028,lng:-72.5003,state:'CT',detail:'Two waterfalls with pools in Middletown. Easy access, popular. May-Sept.'},
+{name:'Enders Falls',layer:'Swimming Holes',lat:41.7611,lng:-72.2814,state:'CT',detail:'Small but scenic waterfall and pool. Near Voluntown. Hidden gem. June-Aug.'},
+{name:'Kaaterskill Falls',layer:'Waterfalls',lat:42.1986,lng:-74.0656,state:'NY',detail:'Two-tier 260-ft cascade in the Catskills. Iconic Hudson Valley waterfall. Beautiful fall foliage. Year-round.'},
+{name:'Moss Glen Falls',layer:'Waterfalls',lat:44.4281,lng:-72.5689,state:'VT',detail:'120-ft waterfall near Granville. Scenic gorge hike. Short 0.3-mile trail. Best in spring. Year-round.'},
+{name:'Arethusa Falls',layer:'Waterfalls',lat:43.8689,lng:-71.4,state:'NH',detail:'New Hampshire\'s highest waterfall at 200 ft. Beautiful White Mountains hike. Crawford Notch. Year-round.'},
+{name:'Tannery Falls',layer:'Waterfalls',lat:42.7,lng:-73.05,state:'MA',detail:'Hidden gem waterfall in Tolland. Small but scenic. Stream crossing hike. Spring-fall.'},
+{name:'Campbell Falls',layer:'Waterfalls',lat:41.8778,lng:-73.3022,state:'CT',detail:'Small waterfall near Kent/Norfolk. Scenic forest hike. Easy access. Year-round.'},
+{name:'Great Falls',layer:'Waterfalls',lat:41.4058,lng:-72.3933,state:'CT',detail:'Cascades on Salmon River in East Haddam. Small but scenic. Year-round.'},
+{name:'Roaring Brook Falls',layer:'Waterfalls',lat:42.0467,lng:-71.9244,state:'MA',detail:'Pretty waterfall near Athol. Small cascade. Forest setting. Year-round.'},
+{name:'Mount Washington',layer:'Hiking',lat:44.2704,lng:-71.3035,state:'NH',detail:'Highest peak in Northeast (6,288 ft). Multiple route options. Extreme weather. Great views. June-Sept.'},
+{name:'Mount Mansfield',layer:'Hiking',lat:44.5292,lng:-72.8067,state:'VT',detail:'Vermont\'s highest peak (4,393 ft) with distinctive profile. Lake of the Clouds. June-Oct.'},
+{name:'Camel\'s Hump',layer:'Hiking',lat:44.4289,lng:-72.8997,state:'VT',detail:'3,355-ft peak with exposed ridge. Scenic views. Multiple routes. June-Oct.'},
+{name:'Mount Katahdin',layer:'Hiking',lat:45.9043,lng:-68.9217,state:'ME',detail:'Northern terminus of Appalachian Trail (5,268 ft). Knife Edge traverse. Extreme exposure. June-Sept.'},
+{name:'Bear Mountain',layer:'Hiking',lat:41.3122,lng:-73.4744,state:'CT',detail:'Connecticut\'s highest point (2,356 ft). Short climb. Stone tower. Year-round.'},
+{name:'Lion\'s Head',layer:'Hiking',lat:41.7669,lng:-73.1436,state:'CT',detail:'Lion-shaped peak near Cornwall. 1,738 ft. Scenic views. Rock scramble summit. Year-round.'},
+{name:'Breakneck Ridge',layer:'Hiking',lat:41.9011,lng:-73.9561,state:'NY',detail:'1.3-mile steep hike (1,140 ft). Incredible Hudson River views. Very popular. Year-round.'},
+{name:'Franconia Ridge',layer:'Hiking',lat:44.1556,lng:-71.7111,state:'NH',detail:'Epic alpine ridge traverse (8+ miles). Mount Lafayette, Lincoln, and Haystack. June-Sept.'},
+{name:'Mount Marcy',layer:'Hiking',lat:44.1103,lng:-73.9244,state:'NY',detail:'Adirondacks highest peak (5,344 ft). Long hike (16+ miles round trip). July-Sept.'},
+{name:'Mount Monadnock',layer:'Hiking',lat:42.8647,lng:-72.1039,state:'NH',detail:'Popular 3,165-ft peak near Peterborough. Multiple routes. Clear views. Year-round.'},
+{name:'Precipice Trail Acadia',layer:'Hiking',lat:44.3308,lng:-68.2283,state:'ME',detail:'Steep iron rung trail on Champlain Mountain in Acadia. Technical scramble. June-Sept.'},
+{name:'Connecticut River',layer:'Paddling/Kayak',lat:41.2833,lng:-72.5833,state:'CT',detail:'Longest river in New England. Scenic sections near Connecticut shoreline. Easy to moderate. Year-round.'},
+{name:'Housatonic River Paddling',layer:'Paddling/Kayak',lat:41.8214,lng:-73.2256,state:'CT',detail:'Scenic float sections near Falls Village. Class I-II whitewater. Spring runoff best. Apr-Oct.'},
+{name:'Saranac Lake',layer:'Paddling/Kayak',lat:44.325,lng:-74.1667,state:'NY',detail:'Beautiful Adirondack lake chain. 6+ miles of paddling. Calm waters. June-Sept.'},
+{name:'Lake Champlain',layer:'Paddling/Kayak',lat:44.5567,lng:-73.2806,state:'VT',detail:'Vermont-NY border lake, 109 miles long. Multiple access points. Can be windy. June-Sept.'},
+{name:'Allagash Waterway',layer:'Paddling/Kayak',lat:46.9167,lng:-70.6667,state:'ME',detail:'92-mile canoe trail in remote Maine wilderness. Class I-II whitewater. 4-7 day trip. June-Sept.'},
+{name:'Saco River',layer:'Paddling/Kayak',lat:43.9667,lng:-71.1667,state:'NH',detail:'Popular float trip with many rentals. Class I-II whitewater. Sandy beaches. June-Sept.'},
+{name:'Farmington River Paddling',layer:'Paddling/Kayak',lat:41.9217,lng:-72.6956,state:'CT',detail:'Scenic sections with Class I-II whitewater. Rapids sections require skill. Spring-fall.'},
+{name:'Hammonasset Beach State Park',layer:'Camping',lat:41.2608,lng:-72.4592,state:'CT',detail:'Beachfront camping near Madison. 550+ sites. Salt marsh, beach access. Summer season May-Oct.'},
+{name:'Devil\'s Hopyard State Park',layer:'Camping',lat:41.74,lng:-72.3061,state:'CT',detail:'Chapman Falls, camping and hiking. 21 campsites. Scenic gorge. May-Oct.'},
+{name:'White Memorial Conservation Center',layer:'Camping',lat:41.7842,lng:-73.1839,state:'CT',detail:'Largest nature center in CT, camping available. 6+ miles of trails. Litchfield area. Year-round.'},
+{name:'Green Mountain National Forest',layer:'Camping',lat:43.5,lng:-72.8,state:'VT',detail:'400,000 acres with multiple campgrounds. Backcountry and car camping. Hiking access. Summer.'},
+{name:'White Mountain National Forest',layer:'Camping',lat:43.7833,lng:-71.5,state:'NH',detail:'750,000 acres with 25+ campgrounds. Backpacking, car camping. Popular destination. Summer.'},
+{name:'Acadia National Park',layer:'Camping',lat:44.3386,lng:-68.2733,state:'ME',detail:'Seacoast camping on Mount Desert Island. 2 campgrounds, 500+ sites. Hiking, climbing. Summer.'},
+{name:'Harriman State Park Camping',layer:'Camping',lat:41.2142,lng:-74.1589,state:'NY',detail:'50,000 acres with 15 campsites and shelters. Hiking, swimming. North of NYC. Summer.'},
+{name:'Adirondack Lean-tos',layer:'Camping',lat:44.0,lng:-73.8,state:'NY',detail:'300+ primitive lean-tos throughout Adirondacks. Backcountry camping. Free or $5/night. Year-round.'},
+{name:'Quechee Gorge State Park',layer:'Camping',lat:43.3803,lng:-72.4156,state:'VT',detail:'16-site campground near scenic gorge. Hiking, fishing. Popular fall foliage destination. Year-round.'},
+{name:'Vermont Class 4 Roads',layer:'Overland/4x4',lat:44.2,lng:-72.6,state:'VT',detail:'Hundreds of unmaintained Class 4 roads suitable for high-clearance vehicles. Beautiful views. Best summer-fall.'},
+{name:'Adirondack Fire Roads',layer:'Overland/4x4',lat:44.0,lng:-73.8,state:'NY',detail:'4WD-accessible fire roads throughout Adirondacks. Remote camping access. Variable conditions. Summer-fall.'},
+{name:'Maine Logging Roads',layer:'Overland/4x4',lat:45.5,lng:-70.5,state:'ME',detail:'Extensive network of gated logging roads. Remote wilderness access. Permits required. Summer-fall.'},
+{name:'New Hampshire Backcountry Roads',layer:'Overland/4x4',lat:43.7,lng:-71.5,state:'NH',detail:'Forest service roads and backcountry routes. White Mountain access. Variable conditions. Summer-fall.'},
+{name:'Pennsylvania State Forest Roads',layer:'Overland/4x4',lat:41.0,lng:-77.5,state:'PA',detail:'Thousands of miles of forest roads. High-clearance recommended. Access to remote areas. Year-round.'},
+{name:'Boondocking/Dispersed Camping Northern VT',layer:'Overland/4x4',lat:44.7,lng:-72.4,state:'VT',detail:'National Forest dispersed camping. Primitive sites, no facilities. Free camping. Summer-fall.'},
+{name:'REI Boston',layer:'Gear Shops',lat:42.3406,lng:-71.0833,state:'MA',detail:'Full-service REI with rental department, climbing wall. Downtown Boston location.'},
+{name:'REI Hartford',layer:'Gear Shops',lat:41.7844,lng:-72.6553,state:'CT',detail:'REI location in West Hartford. Full gear selection, rentals available.'},
+{name:'Eastern Mountain Sports North Conway',layer:'Gear Shops',lat:44.0406,lng:-71.1244,state:'NH',detail:'Full climbing and mountaineering gear selection. Climbing wall. North Conway location.'},
+{name:'Kittery Trading Post',layer:'Gear Shops',lat:43.1,lng:-70.7389,state:'ME',detail:'Massive outdoor retail store. Full selection of gear, fishing tackle, hunting supplies. Famous location.'},
+{name:'Housatonic Meadows Fly Shop',layer:'Gear Shops',lat:41.8214,lng:-73.2256,state:'CT',detail:'Fly fishing specialist near West Cornwall. Rods, flies, licenses. Expert advice.'},
+{name:'Farmington River Fishing Guide & Shop',layer:'Gear Shops',lat:41.9217,lng:-72.6956,state:'CT',detail:'Fly fishing outfitter in Avon. Gear, guides, advice on local water.'},
+{name:'Cabela\'s Bass Pro Manchester',layer:'Gear Shops',lat:43.1667,lng:-70.65,state:'NH',detail:'Massive outdoor retail mega-store near Portsmouth. Full selection of gear, hunting, fishing.'},
+{name:'Local Bike Shops CT',layer:'Gear Shops',lat:41.7656,lng:-72.6722,state:'CT',detail:'Multiple independent bike shops throughout CT. Parts, service, expert advice. Year-round.'},
+{name:'Mountain Equipment Coop VT',layer:'Gear Shops',lat:44.4667,lng:-73.2111,state:'VT',detail:'Independent outdoor gear co-op in Burlington. Full selection, knowledgeable staff.'},
+{name:'Hill Farmstead Brewery',layer:'Breweries/Beer',lat:44.5453,lng:-72.2239,state:'VT',detail:'Hill Farmstead in Greensboro. Legendary craft brewery, outdoor taproom. Beautiful views. Year-round.'},
+{name:'The Alchemist',layer:'Breweries/Beer',lat:44.2306,lng:-72.575,state:'VT',detail:'Famous for IPAs. Waterbury location with taproom. Popular destination. Year-round.'},
+{name:'Trillium Brewing',layer:'Breweries/Beer',lat:42.3312,lng:-71.0557,state:'MA',detail:'Boston craft brewery with beautiful taproom. Excellent IPAs and seasonals. Year-round.'},
+{name:'Tree House Brewing',layer:'Breweries/Beer',lat:42.1833,lng:-72.4667,state:'MA',detail:'Cult-status brewery in Charlton, MA. Limited hours, quality IPAs. Weekends only.'},
+{name:'Lawson\'s Finest Liquids',layer:'Breweries/Beer',lat:44.1667,lng:-72.5667,state:'VT',detail:'Small-batch Vermont brewery in Waitsfield. Excellent Sip of Sunshine IPA. Year-round.'},
+{name:'Fox Farm Brewing',layer:'Breweries/Beer',lat:41.8,lng:-72.9,state:'CT',detail:'CT craft brewery with outdoor patio. Good local beer selection. Year-round.'},
+{name:'New England Brewing',layer:'Breweries/Beer',lat:41.4667,lng:-72.1333,state:'CT',detail:'CT-based craft brewery. Full taproom, food options. Year-round.'},
+{name:'Two Roads Brewing',layer:'Breweries/Beer',lat:41.4583,lng:-72.1417,state:'CT',detail:'Stratford-based brewery. Large taproom, events, food trucks. Year-round.'},
+{name:'Kent Falls Brewing',layer:'Breweries/Beer',lat:41.7647,lng:-73.2953,state:'CT',detail:'Small brewery near Kent Falls. Local beers, outdoor space. Weekend hours.'},
+{name:'Woodstock Inn & Brewery',layer:'Breweries/Beer',lat:43.6481,lng:-72.5156,state:'VT',detail:'Brewery with restaurant and lodging. Central VT location. Food and beer. Year-round.'},
+{name:'Ogunquit Lobster Shack',layer:'Food/Restaurants',lat:43.2333,lng:-70.6,state:'ME',detail:'Classic Maine lobster shack near beach. Fresh lobster rolls, scenic views. Seasonal summer.'},
+{name:'Salt Restaurant',layer:'Food/Restaurants',lat:41.2622,lng:-72.4442,state:'CT',detail:'Farm-to-table restaurant in New Haven. Local sourcing, seasonal menus. Year-round.'},
+{name:'Farmington BBQ',layer:'Food/Restaurants',lat:41.9217,lng:-72.6956,state:'CT',detail:'Local BBQ joint in Farmington. Outdoor dining, great food. Year-round.'},
+{name:'Storm Cafe',layer:'Food/Restaurants',lat:44.4656,lng:-72.8144,state:'VT',detail:'Waterbury farm-to-table restaurant. Local ingredients, creative menus. Year-round.'},
+{name:'Common Man Restaurants',layer:'Food/Restaurants',lat:43.65,lng:-71.6,state:'NH',detail:'Regional NH restaurants with outdoor seating. Casual, good food. Year-round.'},
+{name:'Signal Kitchen',layer:'Food/Restaurants',lat:44.3122,lng:-72.5806,state:'VT',detail:'Waterbury restaurant with outdoor patio. VT ingredients, innovative cooking. Year-round.'},
+{name:'Montpelier Restaurants',layer:'Food/Restaurants',lat:44.2601,lng:-72.5755,state:'VT',detail:'Multiple farm-to-table restaurants in VT\'s capital. Local sourcing. Year-round.'},
+{name:'Narragansett Town Beach',layer:'Surf',lat:41.4333,lng:-71.45,state:'RI',detail:'RI\'s best-known surf beach. Consistent waves, nice beach break. Year-round conditions.'},
+{name:'Westerly Surf Break',layer:'Surf',lat:41.3667,lng:-71.8167,state:'RI',detail:'Misquamicut and other breaks near Westerly. Point break and beach breaks. Year-round.'},
+{name:'Montauk Point',layer:'Surf',lat:41.0817,lng:-71.8606,state:'NY',detail:'Long Island\'s most famous breaks. Ditch Plains, Turtle Cove. Consistent waves. Year-round.'},
+{name:'Long Beach NY',layer:'Surf',lat:40.5731,lng:-73.6503,state:'NY',detail:'Beach breaks on Long Island. Good for beginners and intermediate surfers. Summer-fall.'},
+{name:'Hampton Beach',layer:'Surf',lat:42.9,lng:-70.8167,state:'NH',detail:'New England\'s largest beach break. Wave venue for summer events. June-Sept.'},
+{name:'Cohasset Ledge',layer:'Surf',lat:42.2333,lng:-70.8,state:'MA',detail:'Massachusetts rocky break. Expert only, dangerous. Cold water. Fall-winter.'},
+{name:'Kancamagus Highway',layer:'Scenic Drives',lat:43.8833,lng:-71.45,state:'NH',detail:'34-mile scenic drive through White Mountains. Fall foliage spectacular. Labor Day-Oct.'},
+{name:'Route 100 Vermont',layer:'Scenic Drives',lat:44.0,lng:-72.8,state:'VT',detail:'Scenic north-south drive through Green Mountains. Towns, views, foliage. Spring-fall.'},
+{name:'Mohawk Trail Massachusetts',layer:'Scenic Drives',lat:42.4853,lng:-72.8142,state:'MA',detail:'63-mile scenic drive through Berkshires. Fall foliage premium. Summer-Oct.'},
+{name:'Bear Mountain Road',layer:'Scenic Drives',lat:41.3122,lng:-73.4744,state:'CT',detail:'Winding road to CT\'s highest point. Short scenic drive. Year-round.'},
+{name:'Route 7 CT-VT Corridor',layer:'Scenic Drives',lat:41.8,lng:-73.2,state:'CT',detail:'Scenic driving through Litchfield Hills and into VT. Small towns, covered bridges. Year-round.'},
+{name:'Quechee Gorge Scenic Drive',layer:'Scenic Drives',lat:43.3803,lng:-72.4156,state:'VT',detail:'Short scenic drive to Vermont\'s deepest gorge. US Route 4. Year-round.'},
+{name:'Smugglers Notch Auto Road',layer:'Scenic Drives',lat:44.4981,lng:-72.8389,state:'VT',detail:'Narrow mountain pass between Mt. Mansfield and Sterling Peak. Closed winters. June-Oct.'},
+{name:'Scenic Route 2 Vermont',layer:'Scenic Drives',lat:44.2,lng:-72.5,state:'VT',detail:'East-west scenic drive across VT. Mad River Valley, mountain views. Year-round.'},
+{name:'Vermont 100 Endurance Runs',layer:'Events/Festivals',lat:44.2,lng:-72.6,state:'VT',detail:'100-mile trail ultramarathon. July event. Legendary VT trail running event. One day.'},
+{name:'Killington Beast Spartan',layer:'Events/Festivals',lat:43.6174,lng:-72.803,state:'VT',detail:'Spartan obstacle course race at ski resort. Fall event. September.'},
+{name:'New England Trail Running Events',layer:'Events/Festivals',lat:42.3601,lng:-71.0589,state:'MA',detail:'Multiple trail running races throughout NE. Various distances and seasons. Year-round.'},
+{name:'Cycling Events New England',layer:'Events/Festivals',lat:43.0,lng:-72.0,state:'VT',detail:'Gravel and road cycling events throughout region. Various seasons. Spring-fall.'},
+{name:'Northeast Climbing Festivals',layer:'Events/Festivals',lat:44.0408,lng:-71.1122,state:'NH',detail:'Climbing festivals and competitions in North Conway. Various seasons. Year-round.'},
+{name:'Waterbury Winter Carnival',layer:'Events/Festivals',lat:44.3122,lng:-72.7667,state:'VT',detail:'Winter festival with outdoor activities. January event. One week.'},
+{name:'Fall Foliage Festivals',layer:'Events/Festivals',lat:44.0,lng:-72.8,state:'VT',detail:'Multiple foliage festivals throughout VT and NH. September-October peak.'},
+{name:'NEMBA Bike Races',layer:'Events/Festivals',lat:41.7,lng:-72.8,state:'CT',detail:'Mountain bike races throughout CT and region. Various seasons. Spring-fall.'},
+{name:'Swimming Hole - Houghton Falls',layer:'Secret Spots',lat:41.85,lng:-73.15,state:'CT',detail:'Hidden swimming hole near Cornwall, CT. Off-the-beaten-path. Local secret. June-Aug.'},
+{name:'Backcountry Fishing - West Branch Delaware',layer:'Secret Spots',lat:42.05,lng:-74.95,state:'NY',detail:'Remote backcountry sections of West Branch. Helicopter access required. Expert fly fishing. June-Oct.'},
+{name:'Unmarked Trail - Quabbin Wilderness',layer:'Secret Spots',lat:42.35,lng:-72.25,state:'MA',detail:'Vast backcountry trail network. Mostly unmarked, requires navigation skills. Spring-fall.'},
+{name:'Dispersed Camping - Upper Valley',layer:'Secret Spots',lat:43.7,lng:-72.3,state:'VT',detail:'Remote dispersed camping on national forest lands near Hanover. Free camping. Summer-fall.'},
+{name:'Hidden Pool - Mad River Junction',layer:'Secret Spots',lat:44.05,lng:-72.85,state:'VT',detail:'Local swimming hole near Waterbury. Off-grid access. Scouted by locals only. Summer.'},
+{name:'Secret Ice Climb - Smugglers Notch',layer:'Secret Spots',lat:44.5,lng:-72.83,state:'VT',detail:'Lesser-known alpine ice route. Requires mountaineering knowledge. Expert only. Jan-Mar.'},
+{name:'Backcountry Ski Route - Burnt Ridge',layer:'Secret Spots',lat:44.35,lng:-72.6,state:'VT',detail:'Remote backcountry ski descent. Limited information available. Expert touring required. Winter.'},
+{name:'Saddleback Maine',layer:'Ski Resorts',lat:45.0778,lng:-70.7256,state:'ME',detail:'Southern Maine ski area with 2,000 vertical feet. Smaller alternative to Sunday River. Dec-Mar.'},
+{name:'Pleasant Valley Ski',layer:'Ski Resorts',lat:42.15,lng:-71.5,state:'MA',detail:'Southern Mass ski area. Smaller community mountain. Dec-Mar.'},
+{name:'Burke Mountain',layer:'Ski Resorts',lat:44.6428,lng:-71.9356,state:'VT',detail:'Northeast Kingdom skiing, 2,011 vertical feet. Smaller resorts, lower crowds. Dec-Mar.'},
+{name:'Cascade Waterfall Ice',layer:'Ice Climbing',lat:44.25,lng:-71.35,state:'NH',detail:'Mixed ice/rock near Presidentials. WI 2-3. Winter climbing.'},
+{name:'Horton Ledges',layer:'Rock Climbing',lat:42.8,lng:-71.8,state:'NH',detail:'Granite climbing near Peterborough. Multiple routes 5.4-5.10. Year-round.'},
+{name:'Wallface Mountain',layer:'Rock Climbing',lat:43.9,lng:-74.2,state:'NY',detail:'Adirondack granite with aid climbing. Big walls 5.8-5.10. Technical. Summer.'},
+{name:'Mt. Equinox Trail',layer:'Trail Running',lat:43.1856,lng:-73.0881,state:'VT',detail:'8-mile road+trail run up VT\'s tallest peak. 3,816 ft elevation gain. Tough but iconic. June-Oct.'},
+{name:'Quabbin Reservoir Trail',layer:'Trail Running',lat:42.35,lng:-72.25,state:'MA',detail:'Long trail circumnavigating reservoir. 31+ miles, remote. Trail running sections. Year-round.'},
+{name:'Wildcat Ridge Trail',layer:'Trail Running',lat:43.95,lng:-71.3,state:'NH',detail:'White Mountain ridge trail. Rocky, technical. Great views. June-Sept.'},
+{name:'Mad River Valley Gravel',layer:'Gravel Biking',lat:44.15,lng:-72.75,state:'VT',detail:'Beautiful gravel roads through VT valleys. Multiple loops, scenic. Spring-fall.'},
+{name:'Stonewall Trail MA',layer:'Gravel Biking',lat:42.5,lng:-72.0,state:'MA',detail:'Historic stone walls, gravel roads. Pioneer Valley. Scenic and educational. Year-round.'},
+{name:'Catskill Roads Gravel',layer:'Gravel Biking',lat:42.15,lng:-74.35,state:'NY',detail:'Mountain roads with excellent gravel sections. Scenic valleys. Year-round.'},
+{name:'Trillium Lake Trail',layer:'Mountain Biking',lat:44.65,lng:-72.15,state:'VT',detail:'Technical singletrack in Northeast Kingdom. Expert level. Summer.'},
+{name:'Victory State Forest',layer:'Mountain Biking',lat:44.55,lng:-71.8,state:'VT',detail:'Remote forest service roads and trails. Backcountry riding. Summer-fall.'},
+{name:'Groton State Forest Trails',layer:'Mountain Biking',lat:44.4,lng:-72.35,state:'VT',detail:'Multiple trail systems, varied difficulty. Forest camping. Year-round.'},
+{name:'Ompompanoosuc River',layer:'Fly Fishing',lat:43.7019,lng:-72.2939,state:'VT',detail:'Connecticut River tributary. Rainbow and brown trout. Scenic Hanover area. Apr-Oct.'},
+{name:'Ammonoosuc River',layer:'Fly Fishing',lat:43.85,lng:-71.45,state:'NH',detail:'White Mountain stream with trout. Beautiful gorges. Mixed difficulty. Apr-Oct.'},
+{name:'Wild Branch Salmon River',layer:'Fly Fishing',lat:45.4,lng:-70.0,state:'ME',detail:'Maine salmon river. Remote access. Good late-season fly fishing. July-Sept.'},
+{name:'Sips Waterfall Pool',layer:'Swimming Holes',lat:43.15,lng:-71.3,state:'NH',detail:'Small cascade pool on mountain stream. Cold but refreshing. Summer.'},
+{name:'Bingham Falls',layer:'Swimming Holes',lat:44.35,lng:-72.65,state:'VT',detail:'Series of cascades with deep pools. Popular summer destination. June-Aug.'},
+{name:'Lincoln Pond Cascades',layer:'Swimming Holes',lat:44.0,lng:-72.0,state:'VT',detail:'Mountain stream swimming holes. Remote location. Summer.'},
+{name:'Screw Auger Falls',layer:'Waterfalls',lat:44.4542,lng:-70.975,state:'ME',detail:'Scenic waterfall near Grafton Notch. Easy access, beautiful. Year-round.'},
+{name:'Copeland Cascade',layer:'Waterfalls',lat:44.2667,lng:-71.3333,state:'NH',detail:'Waterfall near Mount Washington area. Good hike, scenic. Summer.'},
+{name:'Crystal Cascade',layer:'Waterfalls',lat:44.3667,lng:-71.35,state:'NH',detail:'Beautiful cascade near Pinkham Notch. Easy to moderate hike. Year-round.'},
+{name:'Mount Jefferson',layer:'Hiking',lat:44.2769,lng:-71.3006,state:'NH',detail:'5,713-ft Presidentials peak with exposed ridge. Technical. June-Sept.'},
+{name:'Mount Madison',layer:'Hiking',lat:44.3431,lng:-71.2581,state:'NH',detail:'5,367-ft Presidentials peak. Starks Col route. Exposed ridge traverse. June-Sept.'},
+{name:'Mt. Isolation',layer:'Hiking',lat:44.1375,lng:-71.2389,state:'NH',detail:'Remote 4,004-ft peak in Whites. Long hike (14+ miles). Backcountry feel. June-Sept.'},
+{name:'Kinsman Ridge Trail',layer:'Hiking',lat:44.15,lng:-71.7,state:'NH',detail:'Scenic ridge traverse with multiple peaks. Full day hike. June-Sept.'},
+{name:'Swift River Paddling',layer:'Paddling/Kayak',lat:42.4,lng:-72.3,state:'MA',detail:'Class I-II river sections. Pleasant float, fishing access. Spring-fall.'},
+{name:'White River VT',layer:'Paddling/Kayak',lat:43.8,lng:-72.4,state:'VT',detail:'Gentle paddle through central VT. Scenic river sections. Spring-fall.'},
+{name:'North Truro State Forest Camping',layer:'Camping',lat:42.0833,lng:-70.05,state:'MA',detail:'Cape Cod area camping. Beach/forest setting. Summer season.'},
+{name:'Baxter State Park',layer:'Camping',lat:45.55,lng:-68.85,state:'ME',detail:'209,644-acre park around Mt. Katahdin. Primitive camping, backpacking. Summer-fall.'},
+{name:'Cold River Road 4x4',layer:'Overland/4x4',lat:43.95,lng:-71.6,state:'NH',detail:'High-clearance vehicle road in White Mountains. Remote access. Summer.'},
+{name:'Northeast Kingdom Backcountry Roads',layer:'Overland/4x4',lat:44.7,lng:-72.0,state:'VT',detail:'Gravel/Class 4 roads through NEK. Remote areas, beautiful views. Summer-fall.'},
+{name:'REI Albany NY',layer:'Gear Shops',lat:42.6026,lng:-73.7897,state:'NY',detail:'REI location in upstate NY. Full gear selection, rental shop.'},
+{name:'Eastern Mountain Sports Maine',layer:'Gear Shops',lat:43.6561,lng:-70.2667,state:'ME',detail:'EMS location in Portland. Outdoor retail, climbing gear.'},
+{name:'Local Fly Shops VT',layer:'Gear Shops',lat:44.2,lng:-72.6,state:'VT',detail:'Multiple independent fly fishing shops throughout VT. Expert guides.'},
+{name:'Burlington Bikes',layer:'Gear Shops',lat:44.4759,lng:-73.2121,state:'VT',detail:'High-end bike shop in Burlington. Service, rentals, local knowledge.'},
+{name:'Woodstock Ski Touring Center',layer:'Gear Shops',lat:43.6481,lng:-72.5156,state:'VT',detail:'Rental and retail for skiing/snowshoeing. XC ski gear.'},
+{name:'Fiddlehead Brewing',layer:'Breweries/Beer',lat:44.5,lng:-72.65,state:'VT',detail:'Shelburne VT brewery. IPA focus, taproom. Year-round.'},
+{name:'Long Trail Brewing',layer:'Breweries/Beer',lat:43.1672,lng:-72.8069,state:'VT',detail:'Bridgewater Corners brewery. Large production, taproom. Year-round.'},
+{name:'Foam Brewers',layer:'Breweries/Beer',lat:44.4667,lng:-73.2111,state:'VT',detail:'Burlington craft brewery. Experimental beers, collab releases. Year-round.'},
+{name:'Night Shift Brewing',layer:'Breweries/Beer',lat:42.3833,lng:-71.1444,state:'MA',detail:'Boston area craft brewery. Innovative IPAs. Year-round.'},
+{name:'Boon Brewing',layer:'Breweries/Beer',lat:44.2644,lng:-72.5903,state:'VT',detail:'Waitsfield brewery with food. Small batch. Year-round.'},
+{name:'Worthy Burger',layer:'Food/Restaurants',lat:44.0122,lng:-72.2797,state:'VT',detail:'Local burger spot in Waterbury. Farm-sourced meat, casual. Year-round.'},
+{name:'Kismet Restaurant',layer:'Food/Restaurants',lat:41.7733,lng:-72.6956,state:'CT',detail:'Farm-to-table in Avon, CT. Seasonal menus, local sourcing. Year-round.'},
+{name:'Woodstock Farmers Market',layer:'Food/Restaurants',lat:43.6481,lng:-72.5156,state:'VT',detail:'Seasonal farmers market with local food. Woodstock VT. Summer-fall.'},
+{name:'Boston Outdoor Restaurants',layer:'Food/Restaurants',lat:42.3601,lng:-71.0589,state:'MA',detail:'Multiple waterfront/outdoor dining options. Varied cuisines. Year-round.'},
+{name:'Sachuest Point Reef Break',layer:'Surf',lat:41.6333,lng:-71.2833,state:'RI',detail:'Reef break near Middletown. Advanced surfers. Year-round.'},
+{name:'Block Island',layer:'Surf',lat:41.1667,lng:-71.5833,state:'RI',detail:'Multiple breaks on island. Beginner to intermediate. Scenic. Summer-fall.'},
+{name:'Acadia Scenic Drive',layer:'Scenic Drives',lat:44.3386,lng:-68.2733,state:'ME',detail:'27-mile Park Loop Road in Acadia. Coastal views, multiple stops. Summer best.'},
+{name:'Notch Area Scenic Drive',layer:'Scenic Drives',lat:43.8667,lng:-71.4,state:'NH',detail:'Crawford Notch scenic drive. Mountain views, waterfalls. Year-round.'},
+{name:'Moosehead Lake Loop',layer:'Scenic Drives',lat:45.5333,lng:-69.6333,state:'ME',detail:'Scenic loop around largest lake in Maine. Remote views. Summer-fall.'},
+{name:'Berkshires Scenic Loop',layer:'Scenic Drives',lat:42.3,lng:-73.3,state:'MA',detail:'Scenic drive through Berkshire mountains. Fall foliage, cultural sites. Year-round.'},
+{name:'Champlain Islands Scenic Drive',layer:'Scenic Drives',lat:44.85,lng:-73.3,state:'VT',detail:'Lake island scenic drive. Rural VT, water views. Summer-fall.'},
+{name:'MUSA Trail Fest',layer:'Events/Festivals',lat:41.7,lng:-72.8,state:'CT',detail:'Mountain and ultralight hiking festival. Connecticut location. Fall.'},
+{name:'Northeast Kingdom Cycling Events',layer:'Events/Festivals',lat:44.6,lng:-72.0,state:'VT',detail:'Gravel and road cycling races in NEK. Various distances. Summer-fall.'},
+{name:'Ski Race Events',layer:'Events/Festivals',lat:43.6174,lng:-72.803,state:'VT',detail:'Killington, Stowe, other resorts host ski races. Winter season.'},
+{name:'Hidden Waterfall - Tributary',layer:'Secret Spots',lat:43.55,lng:-72.0,state:'VT',detail:'Unmarked tributary waterfall. Local knowledge required. Summer.'},
+{name:'Backcountry Camping - Remote Forest',layer:'Secret Spots',lat:45.2,lng:-70.8,state:'ME',detail:'Remote backcountry dispersed camping in Maine forests. Permits required. Summer-fall.'},
+{name:'Pfeiffer Boathouse',layer:'Paddling/Kayak',lat:44.4667,lng:-71.8,state:'NH',detail:'Kayak launch point on Winnipesaukee. Scenic lake paddling. Summer.'},
+{name:'Green River Reservoir VT',layer:'Paddling/Kayak',lat:44.05,lng:-72.45,state:'VT',detail:'Mountain lake paddling. Small and scenic. Summer.'},
+{name:'Spectacle Pond NY',layer:'Paddling/Kayak',lat:43.2,lng:-74.0,state:'NY',detail:'Adirondack pond paddle. Remote and beautiful. Summer.'},
+{name:'Hermitage Classical Academy',layer:'Gear Shops',lat:42.15,lng:-71.25,state:'MA',detail:'Outdoor gear education center. Resource for adventure prep.'},
+{name:'Climbers Guild North Conway',layer:'Gear Shops',lat:44.0408,lng:-71.1122,state:'NH',detail:'Climbing gym and retail in North Conway.'},
+{name:'Mica Basin Ski Area',layer:'Ski Resorts',lat:43.8,lng:-71.3,state:'NH',detail:'Small ski area. Community-focused. Dec-Mar.'},
+{name:'Granite State Park',layer:'Camping',lat:43.15,lng:-71.6,state:'NH',detail:'Camping near Sunapee area. Year-round.'},
+{name:'Shelduck Point Hike',layer:'Hiking',lat:41.8,lng:-73.1,state:'CT',detail:'Scenic Housatonic views. Moderate hike. Year-round.'},
+{name:'Undermountain Road Gravel',layer:'Gravel Biking',lat:41.95,lng:-73.4,state:'CT',detail:'Scenic gravel in northwest CT. Year-round.'},
+{name:'Burlington Waterfront Trail',layer:'Trail Running',lat:44.4759,lng:-73.2121,state:'VT',detail:'Lakeside trail running near Burlington. Easy. Year-round.'},
+{name:'Vergennes Falls',layer:'Swimming Holes',lat:44.1667,lng:-73.2667,state:'VT',detail:'Small cascade pool. Local spot. Summer.'},
+{name:'Profile Lake NH',layer:'Swimming Holes',lat:44.15,lng:-71.65,state:'NH',detail:'Alpine lake swimming. Franconia Notch. Cold water. Summer.'},
+{name:'High Shelf Brewing',layer:'Breweries/Beer',lat:41.7,lng:-72.6,state:'CT',detail:'Small CT brewery. Craft beers. Year-round.'},
+{name:'Portsmouth Brewery',layer:'Breweries/Beer',lat:43.0731,lng:-70.7595,state:'NH',detail:'Historic NH brewery. Pub and restaurant. Year-round.'},
+{name:'Maine Beer Company',layer:'Breweries/Beer',lat:43.66,lng:-70.08,state:'ME',detail:'Freeport ME craft brewery. Beer and taproom. Year-round.'},
+{name:'Thump Coffee',layer:'Food/Restaurants',lat:44.0122,lng:-72.2797,state:'VT',detail:'Waterbury cafe for outdoor enthusiasts. Good pre-adventure stop.'},
+{name:'Positive Pie',layer:'Food/Restaurants',lat:44.4667,lng:-73.2111,state:'VT',detail:'Burlington pizza restaurant. Social scene. Year-round.'},
+{name:'Canteen Creemee',layer:'Food/Restaurants',lat:44.4759,lng:-73.2121,state:'VT',detail:'Classic VT ice cream spot. Summer favorite.'},
+{name:'Cinnamon Girl Bakery',layer:'Food/Restaurants',lat:44.26,lng:-72.58,state:'VT',detail:'Waterbury bakery and cafe. Pre-adventure fuel. Year-round.'},
+{name:'Sarcastic Pig',layer:'Food/Restaurants',lat:44.4667,lng:-73.2111,state:'VT',detail:'Vermont BBQ spot. Casual dining. Year-round.'},
+{name:'Misty Valley Overlook',layer:'Scenic Drives',lat:43.9,lng:-72.2,state:'VT',detail:'Scenic puloff with valley views. Short stop. Year-round.'},
+{name:'Mad River Glen Scenic',layer:'Scenic Drives',lat:44.1414,lng:-72.8878,state:'VT',detail:'Access road with beautiful mountain views. Year-round.'},
+{name:'Stowe Notch Road',layer:'Scenic Drives',lat:44.45,lng:-72.75,state:'VT',detail:'Mountain pass between Stowe and Waterbury. Year-round.'},
+{name:'Lincoln Gap Road VT',layer:'Scenic Drives',lat:44.1,lng:-72.9,state:'VT',detail:'Mountain pass with views. Narrow but scenic. Summer-fall.'},
+{name:'Grout Pond Loop',layer:'Scenic Drives',lat:42.95,lng:-72.95,state:'VT',detail:'Rural loop through southern VT. Year-round.'},
+{name:'Waterbury Reservoir Trail',layer:'Trail Running',lat:44.3122,lng:-72.7667,state:'VT',detail:'Easy reservoir loop. Local favorite. Year-round.'},
+{name:'Mount Sunapee Trail',layer:'Hiking',lat:43.35,lng:-72.1,state:'NH',detail:'Popular 2,726-ft peak. Multiple route options. Year-round.'},
+{name:'Mount Cardigan NH',layer:'Hiking',lat:43.4569,lng:-71.7939,state:'NH',detail:'3,155-ft peak with open views. Multiple trails. Year-round.'},
+{name:'Middle Geodetic Ledge',layer:'Rock Climbing',lat:43.95,lng:-71.25,state:'NH',detail:'Granite climbing near Pinkham Notch. 5.5-5.10 routes. Year-round.'},
+{name:'Palisades Ice Cascade',layer:'Ice Climbing',lat:44.4,lng:-71.4,state:'NH',detail:'Waterfall ice near Franconia. WI 2-3. Winter.'},
+{name:'Deerfield River Race Section',layer:'Paddling/Kayak',lat:42.6,lng:-72.8,state:'MA',detail:'Class II-III whitewater. Managed flows. Spring-summer.'},
+{name:'Westfield River Paddling',layer:'Paddling/Kayak',lat:42.15,lng:-72.7,state:'MA',detail:'Multiple class options on river. Spring runs best.'},
+{name:'Walden Pond',layer:'Swimming Holes',lat:42.45,lng:-71.35,state:'MA',detail:'Historic pond swimming. Concord, MA. Year-round.'},
+{name:'Walton Springs',layer:'Swimming Holes',lat:42.2,lng:-71.5,state:'MA',detail:'Warm spring water. Hidden gem. Summer.'},
+{name:'Royal Arch Falls',layer:'Waterfalls',lat:42.05,lng:-71.95,state:'MA',detail:'Scenic triple cascade. Ashfield, MA. Year-round.'},
+{name:'Bell Pond Waterfall',layer:'Waterfalls',lat:42.8,lng:-72.0,state:'MA',detail:'Small waterfall in rural area. Summer.'},
+{name:'Hairy Mountain Climbing',layer:'Rock Climbing',lat:43.5,lng:-71.9,state:'NH',detail:'Granite crags with multiple routes. 5.4-5.10. Year-round.'},
+{name:'Cliff Side Trail Run',layer:'Trail Running',lat:42.5,lng:-72.5,state:'MA',detail:'Berkshires trail with views. Moderate difficulty. Year-round.'},
+{name:'Cobble Hill MTB',layer:'Mountain Biking',lat:41.65,lng:-72.95,state:'CT',detail:'Technical rocky singletrack near Guilford. Summer.'},
+{name:'Haddam Meadows State Park',layer:'Camping',lat:41.45,lng:-72.5,state:'CT',detail:'Riverside camping near CT River. Year-round.'},
+{name:'Burlingame State Park',layer:'Camping',lat:41.4167,lng:-71.75,state:'RI',detail:'Forest camping in Rhode Island. Year-round.'},
+{name:'Jerimoth Hill',layer:'Hiking',lat:41.7833,lng:-71.7833,state:'RI',detail:'Rhode Island\'s highest point. Short hike. Year-round.'},
+{name:'Pawcatuck River Paddling',layer:'Paddling/Kayak',lat:41.35,lng:-71.85,state:'RI',detail:'Gentle river float in RI/CT border area. Spring-fall.'},
+{name:'Lincoln Woods Trail RI',layer:'Trail Running',lat:41.9,lng:-71.45,state:'RI',detail:'Reservoir loop trail. Easy to moderate. Year-round.'},
+{name:'Northwoods Trail',layer:'Mountain Biking',lat:41.95,lng:-71.45,state:'RI',detail:'Forest singletrack in Rhode Island. Year-round.'},
+{name:'Archway Brewing',layer:'Breweries/Beer',lat:41.8,lng:-71.4,state:'RI',detail:'Rhode Island craft brewery. Taproom. Year-round.'},
+{name:'Mercury Restaurant',layer:'Food/Restaurants',lat:41.82,lng:-71.41,state:'RI',detail:'Providence fine dining. Local chef focus. Year-round.'},
+{name:'Empire Tea',layer:'Food/Restaurants',lat:41.83,lng:-71.4,state:'RI',detail:'Providence tea shop. Pre-adventure gather spot. Year-round.'},
+{name:'Peaks Island Loop Bike',layer:'Gravel Biking',lat:43.6667,lng:-70.2,state:'ME',detail:'Island loop bike ride near Portland. Scenic. Summer.'},
+{name:'Lagrange Road Gravel',layer:'Gravel Biking',lat:45.0,lng:-70.0,state:'ME',detail:'Remote Maine gravel roads. Logging road access. Summer-fall.'},
+{name:'Pelham Brook Trail Run',layer:'Trail Running',lat:43.55,lng:-71.2,state:'NH',detail:'Easy brook-side trail running. Year-round.'},
+{name:'Papoose Peak',layer:'Hiking',lat:44.15,lng:-71.3,state:'NH',detail:'Small peak with big views. White Mountains. Year-round.'},
+{name:'Tenant\'s Harbor Ice',layer:'Ice Climbing',lat:44.05,lng:-69.0,state:'ME',detail:'Coastal Maine ice climbing. WI 2-2+. Winter.'},
+{name:'Abol Slide Backcountry',layer:'Backcountry Ski',lat:45.9,lng:-68.9,state:'ME',detail:'Remote Katahdin-area ski descent. Expert. Winter.'},
+{name:'West Lovejoy Ski',layer:'Backcountry Ski',lat:43.8,lng:-71.0,state:'NH',detail:'Presidential range side descent. Expert touring. Winter.'},
+{name:'Coliseum Peak Route',layer:'Rock Climbing',lat:43.0,lng:-71.3,state:'NH',detail:'High-altitude climbing. Alpine granite. Summer.'},
+{name:'Franconia Notch Scenic Stop',layer:'Scenic Drives',lat:44.1333,lng:-71.6667,state:'NH',detail:'Multiple pulloffs with views. Walkable scenic stops. Year-round.'},
+{name:'Presidential Range Loop',layer:'Scenic Drives',lat:44.25,lng:-71.3,state:'NH',detail:'Base of presidential mountains drive. Year-round.'},
+{name:'Connecticut River Scenic',layer:'Scenic Drives',lat:42.0,lng:-72.6,state:'CT',detail:'River valley drives. Multiple pulloffs. Year-round.'},
+{name:'Litchfield Hills Loop',layer:'Scenic Drives',lat:41.85,lng:-73.2,state:'CT',detail:'Quintessential CT scenic drive. Year-round.'},
+{name:'Wildflower Festival',layer:'Events/Festivals',lat:44.3,lng:-72.6,state:'VT',detail:'Spring wildflower events throughout VT. May-June.'},
+{name:'Mountain Music Festival',layer:'Events/Festivals',lat:44.15,lng:-72.8,state:'VT',detail:'VT outdoor music events. Summer.'},
+{name:'Trail Work Day Events',layer:'Events/Festivals',lat:43.7,lng:-72.0,state:'VT',detail:'Volunteer trail maintenance events. Spring-fall.'},
+{name:'AJ\'s Local Fishing Hole',layer:'Secret Spots',lat:41.75,lng:-72.4,state:'CT',detail:'Private Woodbridge-area fishing access. Local knowledge. Year-round.'},
+{name:'Quiet Mill Pond',layer:'Secret Spots',lat:41.65,lng:-72.3,state:'CT',detail:'Backcountry swimming/paddling spot. Hidden gem. Summer.'},
+{name:'Laurel Hill Trail',layer:'Secret Spots',lat:43.2,lng:-72.0,state:'VT',detail:'Unmarked forest trail. Local runner favorite. Year-round.'},
+{name:'Dingo Shelter BC Camp',layer:'Secret Spots',lat:44.8,lng:-71.9,state:'VT',detail:'Remote backcountry lean-to. Nomoto access. Summer-fall.'},
+];
+
+LOCATIONS.forEach(loc => {
+  const R = 3959;
+  const dLat = (loc.lat - HOME_LAT) * Math.PI / 180;
+  const dLng = (loc.lng - HOME_LNG) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(HOME_LAT*Math.PI/180) * Math.cos(loc.lat*Math.PI/180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  loc.distMi = Math.round(R * c);
+  loc.driveMin = Math.round(loc.distMi / 45 * 60);
+  loc.driveHr = (loc.driveMin / 60).toFixed(1);
+});
+
+LOCATIONS.forEach(loc => {
+  const cl = CLOSURES.find(c => loc.name.includes(c.match) || (loc.detail && loc.detail.includes(c.match)));
+  if(cl) { loc.alert = cl.msg; loc.alertSeverity = cl.severity; }
+});
+
+const map = L.map('map', {zoomControl: true}).setView([43.0, -72.5], 7);
+const darkTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19});
+const streetTile = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap', maxZoom: 19});
+const satTile = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Esri World Imagery', maxZoom: 19});
+const topoTile = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {attribution: 'OpenTopoMap', maxZoom: 17});
+darkTile.addTo(map);
+let currentTile = 'dark';
+
+const ctrlDiv = document.createElement('div');
+ctrlDiv.className = 'map-controls';
+ctrlDiv.innerHTML = '<button class="map-btn active" id="btn-dark">Dark</button><button class="map-btn" id="btn-street">Street</button><button class="map-btn" id="btn-sat">Satellite</button><button class="map-btn" id="btn-topo">Topo</button>';
+document.getElementById('map-container').appendChild(ctrlDiv);
+
+function switchTile(name) {
+  [darkTile, streetTile, satTile, topoTile].forEach(t => map.removeLayer(t));
+  if(name === 'dark') darkTile.addTo(map);
+  else if(name === 'street') streetTile.addTo(map);
+  else if(name === 'topo') topoTile.addTo(map);
+  else satTile.addTo(map);
+  currentTile = name;
+  document.querySelectorAll('.map-controls .map-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + name).classList.add('active');
+}
+['dark', 'street', 'sat', 'topo'].forEach(n => document.getElementById('btn-' + n).addEventListener('click', () => switchTile(n)));
+
+const homeIcon = L.divIcon({className: '', html: '<div style="width:16px;height:16px;border-radius:50%;background:#22c55e;border:3px solid #fff;box-shadow:0 0 10px #22c55e80"></div>', iconSize: [16, 16], iconAnchor: [8, 8]});
+L.marker([HOME_LAT, HOME_LNG], {icon: homeIcon}).addTo(map).bindPopup('<div class="popup-content"><h3>🏠 Home Base</h3><div class="p-type">Woodbridge, CT</div></div>');
+
+const homeBtn = document.createElement('button');
+homeBtn.className = 'home-btn';
+homeBtn.textContent = '🏠 Home';
+homeBtn.addEventListener('click', () => map.setView([HOME_LAT, HOME_LNG], 10));
+document.getElementById('map-container').appendChild(homeBtn);
+
+let markers = [];
+let activeFilters = new Set(Object.keys(LAYERS).filter(k => LAYERS[k].visible));
+
+function createIcon(color, isSecret) {
+  const s = isSecret ? 10 : 12;
+  return L.divIcon({className: '', html: '<div style="width:' + s + 'px;height:' + s + 'px;border-radius:50%;background:' + color + ';border:2px solid rgba(255,255,255,.6);box-shadow:0 0 6px ' + color + '80"></div>', iconSize: [s, s], iconAnchor: [s/2, s/2]});
+}
+
+function getNavLink(lat, lng, mode) {
+  return 'https://www.google.com/maps/dir/?api=1&origin=' + HOME_LAT + ',' + HOME_LNG + '&destination=' + lat + ',' + lng + '&travelmode=' + mode;
+}
+
+function formatDrive(loc) {
+  if(loc.driveMin < 60) return '~' + loc.driveMin + 'min';
+  return '~' + loc.driveHr + 'hr (' + loc.distMi + 'mi)';
+}
+
+function renderMarkers() {
+  markers.forEach(m => map.removeLayer(m.marker));
+  markers = [];
+  const q = document.getElementById('search').value.toLowerCase();
+  const stateFilter = document.getElementById('state-filter').value;
+  const actFilter = document.getElementById('activity-filter').value;
+  let ef = activeFilters;
+  if(actFilter) {
+    const gl = ACTIVITY_GROUPS[actFilter] || [];
+    ef = new Set(gl);
+  }
+  let visible = LOCATIONS.filter(loc => {
+    if(!ef.has(loc.layer)) return false;
+    if(stateFilter && loc.state !== stateFilter) return false;
+    if(q && !loc.name.toLowerCase().includes(q) && !loc.state.toLowerCase().includes(q) && !(loc.detail||'').toLowerCase().includes(q) && !loc.layer.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  visible.sort((a, b) => a.distMi - b.distMi);
+  visible.forEach(loc => {
+    const color = LAYERS[loc.layer]?.color || '#fff';
+    const isSecret = loc.layer === 'Secret Spots';
+    const marker = L.marker([loc.lat, loc.lng], {icon: createIcon(color, isSecret)}).addTo(map);
+    const nd = getNavLink(loc.lat, loc.lng, 'driving');
+    const nt = getNavLink(loc.lat, loc.lng, 'transit');
+    const nw = getNavLink(loc.lat, loc.lng, 'walking');
+    let alertHtml = '';
+    if(loc.alert) {
+      const ac = loc.alertSeverity === 'red' ? 'p-alert-red' : loc.alertSeverity === 'yellow' ? 'p-alert-yellow' : 'p-alert-blue';
+      const bg = loc.alertSeverity === 'red' ? 'background:#fee2e2;color:#991b1b' : loc.alertSeverity === 'yellow' ? 'background:#fef3c7;color:#92400e' : 'background:#dbeafe;color:#1e40af';
+      alertHtml = '<div style="font-size:11px;padding:4px 8px;border-radius:4px;margin-top:4px;' + bg + '">' + loc.alert + '</div>';
+    }
+    marker.bindPopup('<div class="popup-content"><h3>' + loc.name + '</h3><div class="p-type" style="color:' + color + '">' + loc.layer + ' · ' + loc.state + '</div><div class="p-detail">' + (loc.detail||'') + '</div><div style="font-size:11px;color:#6b7280;margin-top:4px">🚗 ' + formatDrive(loc) + ' from Woodbridge</div>' + alertHtml + '<div style="margin-top:8px"><a href="' + nd + '" target="_blank" class="p-nav p-nav-drive">🚗 Drive</a><a href="' + nt + '" target="_blank" class="p-nav p-nav-transit">🚌 Transit</a><a href="' + nw + '" target="_blank" class="p-nav p-nav-walk">🚶 Walk</a></div></div>');
+    markers.push({marker, loc});
+  });
+  document.getElementById('result-count').textContent = visible.length + ' spots shown · sorted by distance';
+  document.getElementById('map-badge').textContent = visible.length + ' spots';
+  renderResults(visible);
+  renderStats(visible);
+}
+
+function renderResults(visible) {
+  const el = document.getElementById('results');
+  el.innerHTML = visible.map(loc => {
+    const color = LAYERS[loc.layer]?.color || '#fff';
+    const icon = LAYERS[loc.layer]?.icon || '📍';
+    const nd = getNavLink(loc.lat, loc.lng, 'driving');
+    const nt = getNavLink(loc.lat, loc.lng, 'transit');
+    const nw = getNavLink(loc.lat, loc.lng, 'walking');
+    let cc = 'result-card';
+    let ah = '';
+    if(loc.alert) { cc += ' alert-' + loc.alertSeverity; ah = '<div class="result-alert alert-bg-' + loc.alertSeverity + '">' + loc.alert + '</div>'; }
+    if(loc.layer === 'Secret Spots') cc += ' secret';
+    return '<div class="' + cc + '" data-lat="' + loc.lat + '" data-lng="' + loc.lng + '"><div class="result-name">' + icon + ' ' + loc.name + '</div><div class="result-type" style="color:' + color + '">' + loc.layer + ' · ' + loc.state + ' · 🚗 ' + formatDrive(loc) + '</div><div class="result-detail">' + ((loc.detail||'').substring(0, 140)) + ((loc.detail||'').length > 140 ? '...' : '') + '</div>' + ah + '<div class="nav-links"><a href="' + nd + '" target="_blank" class="nav-link nav-drive">🚗 Drive</a><a href="' + nt + '" target="_blank" class="nav-link nav-transit">🚌 Transit</a><a href="' + nw + '" target="_blank" class="nav-link nav-walk">🚶 Walk</a></div></div>';
+  }).join('');
+  el.querySelectorAll('.result-card').forEach(card => {
+    card.addEventListener('click', e => {
+      if(e.target.tagName === 'A') return;
+      const lat = parseFloat(card.dataset.lat), lng = parseFloat(card.dataset.lng);
+      map.setView([lat, lng], 13);
+      const m = markers.find(m => m.loc.lat === lat && m.loc.lng === lng);
+      if(m) m.marker.openPopup();
+    });
+  });
+}
+
+function renderStats(visible) {
+  const cats = {}; visible.forEach(l => { if(!cats[l.layer]) cats[l.layer] = 0; cats[l.layer]++; });
+  const sc = {}; visible.forEach(l => { if(!sc[l.state]) sc[l.state] = 0; sc[l.state]++; });
+  const el = document.getElementById('stats');
+  const tc = Object.entries(cats).sort((a, b) => b[1] - a[1]).slice(0, 4);
+  el.innerHTML = '<div class="stat"><div class="stat-num">' + visible.length + '</div><div class="stat-label">Spots</div></div>' +
+    '<div class="stat"><div class="stat-num" style="color:#f59e0b">' + Object.keys(sc).length + '</div><div class="stat-label">States</div></div>' +
+    tc.map(([k, v]) => '<div class="stat"><div class="stat-num" style="color:' + (LAYERS[k]?.color || '#fff') + '">' + v + '</div><div class="stat-label">' + k.split('/')[0].substring(0, 10) + '</div></div>').join('') +
+    '<div class="refresh-date">Updated: Mar 2026</div>';
+}
+
+function renderLayers() {
+  const el = document.getElementById('layers');
+  el.innerHTML = '';
+  Object.entries(ACTIVITY_GROUPS).forEach(([group, layerNames]) => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'activity-group';
+    const allActive = layerNames.every(name => activeFilters.has(name));
+    const groupHeader = document.createElement('div');
+    groupHeader.className = 'group-header';
+    groupHeader.innerHTML = '<div class="group-toggle ' + (allActive ? 'active' : '') + '">' + (allActive ? '✓' : '') + '</div><span class="group-title">' + group + '</span><span class="group-count">(' + layerNames.filter(n => LOCATIONS.some(l => l.layer === n)).length + ')</span>';
+    groupHeader.addEventListener('click', () => {
+      if(allActive) {
+        layerNames.forEach(name => activeFilters.delete(name));
+      } else {
+        layerNames.forEach(name => activeFilters.add(name));
+      }
+      renderLayers();
+      renderMarkers();
+    });
+    const itemsDiv = document.createElement('div');
+    itemsDiv.className = 'group-items';
+    layerNames.forEach(name => {
+      const cfg = LAYERS[name];
+      if(!cfg) return;
+      const active = activeFilters.has(name);
+      const cnt = LOCATIONS.filter(l => l.layer === name).length;
+      if(cnt === 0) return;
+      const div = document.createElement('div');
+      div.className = 'layer-item';
+      div.innerHTML = '<div class="layer-check ' + (active ? 'active' : '') + '" data-layer="' + name + '">' + (active ? '✓' : '') + '</div><div class="layer-dot" style="background:' + cfg.color + '"></div><span>' + cfg.icon + ' ' + name + ' (' + cnt + ')</span>';
+      div.querySelector('.layer-check').addEventListener('click', function(e) {
+        e.stopPropagation();
+        if(activeFilters.has(name)) activeFilters.delete(name);
+        else activeFilters.add(name);
+        renderLayers();
+        renderMarkers();
+      });
+      itemsDiv.appendChild(div);
+    });
+    groupDiv.appendChild(groupHeader);
+    groupDiv.appendChild(itemsDiv);
+    el.appendChild(groupDiv);
+  });
+}
+
+const hamburger = document.getElementById('hamburger-btn');
+const sidebarClose = document.getElementById('sidebar-close');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+
+hamburger.addEventListener('click', () => {
+  sidebar.classList.remove('hidden');
+  overlay.classList.add('active');
+});
+
+sidebarClose.addEventListener('click', () => {
+  sidebar.classList.add('hidden');
+  overlay.classList.remove('active');
+});
+
+overlay.addEventListener('click', () => {
+  sidebar.classList.add('hidden');
+  overlay.classList.remove('active');
+});
+
+document.getElementById('search').addEventListener('input', () => {
+  document.getElementById('activity-filter').value = '';
+  renderMarkers();
+});
+
+document.getElementById('state-filter').addEventListener('change', renderMarkers);
+document.getElementById('activity-filter').addEventListener('change', renderMarkers);
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  document.getElementById('search').value = '';
+  document.getElementById('state-filter').value = '';
+  document.getElementById('activity-filter').value = '';
+  activeFilters = new Set(Object.keys(LAYERS).filter(k => LAYERS[k].visible));
+  renderLayers();
+  renderMarkers();
+});
+
+renderLayers();
+renderMarkers();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://azimuththerapeutics.com/sitemap.xml
+
+# Block sensitive directories
+Disallow: /map/

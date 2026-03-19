@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule a Consultation | Azimuth Therapeutics</title>
+    <meta name="description" content="Request a consultation with Arthur J. Anderson, APRN, PMHNP-BC, LCSW. Evidence-based psychiatric care in Greater New Haven Area, CT and via telehealth.">
+    <meta property="og:title" content="Schedule a Consultation | Azimuth Therapeutics">
+    <meta property="og:description" content="Request a consultation for evidence-based psychiatric care. Greater New Haven Area, CT and telehealth available.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://azimuththerapeutics.com/schedule.html">
+    <meta property="og:image" content="https://azimuththerapeutics.com/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Schedule a Consultation | Azimuth Therapeutics">
+    <meta name="twitter:description" content="Request a consultation for evidence-based psychiatric care. Greater New Haven Area, CT and telehealth available.">
+    <meta name="twitter:image" content="https://azimuththerapeutics.com/og-image.jpg">
+    <link rel="canonical" href="https://azimuththerapeutics.com/schedule.html">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <script defer data-domain="azimuththerapeutics.com" src="https://plausible.io/js/script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Schedule a Consultation",
+        "description": "Request an initial consultation with Arthur J. Anderson, APRN, PMHNP-BC, LCSW for concierge psychiatric care in Connecticut.",
+        "url": "https://azimuththerapeutics.com/schedule.html",
+        "isPartOf": {"@type": "WebSite", "name": "Azimuth Therapeutics", "url": "https://azimuththerapeutics.com"},
+        "author": {"@type": "Person", "name": "Arthur J. Anderson", "honorificSuffix": "APRN, PMHNP-BC, LCSW"}
+    }
+    </script>
+
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+    <nav id="navbar" aria-label="Main navigation">
+        <div class="container">
+            <div class="logo"><a href="index.html">AZIMUTH</a></div>
+            <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul id="navMenu">
+                <li><a href="index.html#philosophy">Philosophy</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li class="nav-dropdown">
+                    <a href="index.html#services" class="dropdown-trigger">Services <span class="dropdown-arrow">▾</span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="index.html#services">Concierge Psychiatry</a></li>
+                        <li><a href="index.html#talk-therapy">Talk Therapy</a></li>
+                        <li><a href="index.html#experiential">Experiential Therapy</a></li>
+                        <li><a href="index.html#pharmacological">Pharmacological Interventions</a></li>
+                    </ul>
+                </li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="blog.html">Insights</a></li>
+                <li><a href="index.html#faq">FAQ</a></li>
+                <li class="nav-dropdown">
+                    <a href="index.html#contact" class="dropdown-trigger">Connect <span class="dropdown-arrow">▾</span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="schedule.html">Schedule</a></li>
+                        <li><a href="refer.html">Refer a Patient</a></li>
+                        <li><a href="index.html#contact">Contact Us</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-hero" id="main-content">
+        <h1>Schedule a Consultation</h1>
+        <p>Take the first step toward care that sees you as a whole person. Complete the form below and we'll be in touch within one business day to schedule your initial consultation.</p>
+    </div>
+
+    <div class="container">
+        <!-- WHAT TO EXPECT -->
+        <div class="expect-grid">
+            <div class="expect-card">
+                <span class="step">1</span>
+                <h3>Submit Request</h3>
+                <p>Complete the brief intake form below. No sensitive health information needed at this stage.</p>
+            </div>
+            <div class="expect-card">
+                <span class="step">2</span>
+                <h3>We Connect</h3>
+                <p>We'll reach out within one business day to discuss your needs and schedule your first appointment.</p>
+            </div>
+            <div class="expect-card">
+                <span class="step">3</span>
+                <h3>Initial Consultation</h3>
+                <p>A 60-minute comprehensive evaluation, in person or via telehealth. No rushed visits.</p>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="form-section" id="formSection">
+            <h2>Consultation Request</h2>
+            <p>Fields marked with * are required. This form is for scheduling purposes only.</p>
+
+            <form id="scheduleForm" onsubmit="handleScheduleSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone *</label>
+                        <input type="tel" id="phone" name="phone" placeholder="(203) 555-0000" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dob">Date of Birth <span style="font-size:0.75rem;opacity:0.65;font-weight:normal">(for age verification only — not stored as PHI)</span></label>
+                        <input type="date" id="dob" name="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State of Residence *</label>
+                        <select id="state" name="state" required>
+                            <option value="">Select state</option>
+                            <option value="CT">Connecticut</option>
+                            <option value="NY">New York</option>
+                            <option value="other">Other (telehealth may vary)</option>
+                        </select>
+                        <p class="hint">Telehealth availability depends on state licensing.</p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="visitType">Preferred Visit Type</label>
+                        <select id="visitType" name="visitType">
+                            <option value="">No preference</option>
+                            <option value="in-person">In-Person (Greater New Haven Area, CT)</option>
+                            <option value="telehealth">Telehealth</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="referralSource">How Did You Hear About Us?</label>
+                        <select id="referralSource" name="referralSource">
+                            <option value="">Select one</option>
+                            <option value="physician">Physician / Provider Referral</option>
+                            <option value="therapist">Therapist Referral</option>
+                            <option value="search">Internet Search</option>
+                            <option value="social">Social Media</option>
+                            <option value="friend">Friend / Family</option>
+                            <option value="psychology-today">Psychology Today</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group full">
+                    <label for="concerns">What brings you to Azimuth?</label>
+                    <textarea id="concerns" name="concerns" placeholder="A brief description of what you're looking for in care. No need to share sensitive health details here — we'll discuss everything during your consultation."></textarea>
+                </div>
+
+                <div class="form-group full">
+                    <label for="insurance">Insurance (if applicable)</label>
+                    <input type="text" id="insurance" name="insurance" placeholder="e.g., Aetna, Blue Cross, Self-Pay">
+                    <p class="hint">Azimuth operates as a concierge practice. We can discuss insurance, superbills, and out-of-network benefits during your consultation.</p>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="consent" name="consent" required>
+                    <label for="consent">I understand this is not a secure or HIPAA-compliant communication channel. I will not include protected health information in this form. I consent to being contacted at the email and phone number provided. *</label>
+                </div>
+
+                <button type="submit" class="submit-btn">Request Consultation</button>
+
+                <p class="privacy-note">Your information is used only to schedule your consultation. See our <a href="privacy.html">Privacy Policy</a>. For clinical matters, secure communication will be established once you become a patient.</p>
+            </form>
+        </div>
+
+        <!-- SUCCESS MESSAGE (shown after submit) -->
+        <div class="success-message" id="successMessage">
+            <div class="checkmark">&#10003;</div>
+            <h3>Request Received</h3>
+            <p>Thank you for reaching out. We'll contact you within one business day to schedule your initial consultation. If you need immediate assistance, please call <a href="tel:+12037186513" style="color: var(--gold);">(203) 718-6513</a>.</p>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <div class="info-bar-inner">
+            <div class="info-item">
+                <label>Phone</label>
+                <p><a href="tel:+12037186513">(203) 718-6513</a></p>
+            </div>
+            <div class="info-item">
+                <label>Location</label>
+                <p>267 Grant Street, Greater New Haven Area, CT 06610</p>
+            </div>
+            <div class="info-item">
+                <label>Hours</label>
+                <p>Mon-Fri 9 AM - 5 PM EST</p>
+            </div>
+            <div class="info-item">
+                <label>Telehealth</label>
+                <p>Available Nationwide</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p style="font-family: 'Cinzel', 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold); margin-bottom: 1.5rem; letter-spacing: 2px; font-weight: 600;">AZIMUTH</p>
+            <p style="margin-bottom: 0.5rem;">&copy; 2026 Azimuth Therapeutics, LLC. All rights reserved.</p>
+            <p style="margin-bottom: 1.5rem;">Connecticut Licensed &bull; NPI 1841900305 &bull; Clinical Services: CT &bull; Consultations Nationwide</p>
+            <p style="font-size: 0.8rem; margin-bottom: 0.5rem; color: rgba(255,255,255,0.5);">
+                <a href="index.html">Home</a> &bull;
+                <a href="pricing.html">Pricing</a> &bull;
+                <a href="wellness.html">Wellness</a> &bull;
+                <a href="schedule.html">Schedule</a> &bull;
+                <a href="refer.html">Refer a Patient</a> &bull;
+                <a href="blog.html">Insights</a> &bull;
+                <a href="privacy.html">Privacy Policy</a>
+            </p>
+            <div class="footer-disclaimer">
+                <p><strong>Disclaimer:</strong> This website is for informational purposes only and does not constitute medical advice. Azimuth Therapeutics does not provide emergency psychiatric care. If you are in immediate danger or experiencing a psychiatric emergency, please call 911 or go to your nearest Emergency Department.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    function handleScheduleSubmit(e) {
+        e.preventDefault();
+        var form = e.target;
+        var email = form.querySelector('#email').value;
+        var phone = form.querySelector('#phone').value.replace(/\D/g, '');
+        var dob = form.querySelector('#dob').value;
+
+        // Validate email format
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+
+        // Validate phone (at least 10 digits)
+        if (phone.length < 10) {
+            alert('Please enter a valid phone number with area code.');
+            return;
+        }
+
+        // Validate age (must be 18+)
+        if (dob) {
+            var birth = new Date(dob);
+            var today = new Date();
+            var age = today.getFullYear() - birth.getFullYear();
+            var m = today.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+            if (age < 18) {
+                alert('Patients must be 18 years or older. For adolescent referrals, please contact us by phone.');
+                return;
+            }
+        }
+
+        // Submit to Formspree
+        // SETUP: Replace YOUR_FORM_ID with your Formspree form ID (e.g., xABCDEFG)
+        var formspreeId = 'mvzwkoan';
+        var formData = new FormData(form);
+
+        fetch('https://formspree.io/f/' + formspreeId, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+        }).then(function(response) {
+            if (response.ok) {
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('successMessage').classList.add('visible');
+                window.scrollTo({ top: document.getElementById('successMessage').offsetTop - 100, behavior: 'smooth' });
+            } else {
+                alert('There was a problem submitting your request. Please call (203) 718-6513 instead.');
+            }
+        }).catch(function() {
+            alert('There was a problem submitting your request. Please call (203) 718-6513 instead.');
+        });
+    }
+    </script>
+
+    <script src="site.js"></script>
+</body>
+</html>

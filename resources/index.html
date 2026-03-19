@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer data-domain="azimuththerapeutics.com" src="https://plausible.io/js/script.js"></script>
+<meta name="robots" content="noindex, nofollow">
+<title>CT Behavioral Health & Social Services Resource Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/3.0.2/leaflet.fullscreen.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0}
+#app{display:flex;height:100vh}
+#sidebar{width:380px;background:#1e293b;display:flex;flex-direction:column;border-right:1px solid #334155;overflow:hidden}
+#map-container{flex:1;position:relative}
+#map{height:100%;width:100%}
+.header{padding:16px;background:linear-gradient(135deg,#1e3a5f,#0f766e);border-bottom:1px solid #334155}
+.header h1{font-size:16px;font-weight:700;color:#fff;margin-bottom:2px}
+.header p{font-size:11px;color:#94a3b8}
+.search-box{padding:10px 16px;border-bottom:1px solid #334155}
+.search-box input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#e2e8f0;font-size:13px;outline:none}
+.search-box input:focus{border-color:#0ea5e9}
+.search-box input::placeholder{color:#64748b}
+.system-filter{padding:8px 16px;border-bottom:1px solid #334155}
+.system-filter label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;display:block;margin-bottom:4px}
+.system-filter select{width:100%;padding:6px 10px;border-radius:6px;border:1px solid #475569;background:#0f172a;color:#e2e8f0;font-size:12px;outline:none;cursor:pointer}
+.system-filter select:focus{border-color:#0ea5e9}
+.layers{padding:10px 16px;border-bottom:1px solid #334155;max-height:300px;overflow-y:auto}
+.layers h3{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:8px}
+.layer-group{margin-bottom:10px}
+.layer-group-title{font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:4px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.layer-group-title:hover{color:#e2e8f0}
+.layer-group-title .arrow{transition:transform .2s;font-size:10px}
+.layer-group-title .arrow.open{transform:rotate(90deg)}
+.layer-items{padding-left:8px}
+.layer-item{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;font-size:12px}
+.layer-item:hover{color:#fff}
+.layer-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
+.layer-check{width:14px;height:14px;border-radius:3px;border:1px solid #475569;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;cursor:pointer}
+.layer-check.active{background:#0ea5e9;border-color:#0ea5e9}
+.results{flex:1;overflow-y:auto;padding:8px 12px}
+.result-card{background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.result-card:hover{border-color:#0ea5e9;transform:translateX(2px)}
+.result-card.warning{border-left:3px solid #f59e0b}
+.result-card.alert-yellow{border-left:3px solid #f59e0b}
+.result-card.alert-red{border-left:3px solid #ef4444;opacity:.85}
+.result-card.alert-blue{border-left:3px solid #3b82f6}
+.result-alert{font-size:10px;padding:3px 6px;border-radius:4px;margin-top:4px;display:inline-block}
+.alert-bg-yellow{background:#78350f;color:#fbbf24}
+.alert-bg-red{background:#7f1d1d;color:#fca5a5}
+.alert-bg-blue{background:#1e3a5f;color:#93c5fd}
+.result-drive{font-size:10px;color:#475569;margin-top:2px}
+.result-card.closed{border-left:3px solid #ef4444;opacity:.7}
+.result-name{font-size:13px;font-weight:600;color:#f1f5f9}
+.result-type{font-size:10px;color:#64748b;margin-top:1px}
+.result-detail{font-size:11px;color:#94a3b8;margin-top:4px}
+.result-phone{font-size:11px;color:#38bdf8;margin-top:2px}
+.result-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.tag{padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;text-transform:uppercase}
+.tag-ip{background:#1e3a5f;color:#60a5fa}
+.tag-php{background:#1a3a2a;color:#4ade80}
+.tag-iop{background:#3a2a1a;color:#fbbf24}
+.tag-crisis{background:#3a1a1a;color:#f87171}
+.tag-sud{background:#2a1a3a;color:#c084fc}
+.tag-shelter{background:#3a2a0a;color:#f97316}
+.tag-food{background:#1a2a0a;color:#84cc16}
+.tag-gym{background:#0a2a1a;color:#10b981}
+.tag-yoga{background:#2a0a2a;color:#d946ef}
+.tag-cannabis{background:#1a2a0a;color:#65a30d}
+.tag-bio{background:#2a1a2a;color:#f472b6}
+.tag-sud{background:#2a1a3a;color:#c084fc}
+.tag-shelter{background:#1a2a3a;color:#67e8f9}
+.tag-food{background:#2a3a1a;color:#a3e635}
+.tag-recovery{background:#1a3a3a;color:#2dd4bf}
+.tag-warning{background:#78350f;color:#fbbf24}
+.tag-closed{background:#7f1d1d;color:#fca5a5}
+.result-nav{display:inline-block;font-size:10px;color:#0ea5e9;text-decoration:none;margin-top:4px}
+.result-nav:hover{color:#38bdf8;text-decoration:underline}
+.result-count{padding:8px 16px;font-size:11px;color:#64748b;border-bottom:1px solid #334155}
+.popup-content{font-family:'Segoe UI',sans-serif;max-width:280px}
+.popup-content h3{font-size:14px;color:#1e293b;margin-bottom:4px}
+.popup-content .p-type{font-size:11px;color:#64748b;margin-bottom:6px}
+.popup-content .p-detail{font-size:12px;color:#334155;margin-bottom:4px}
+.popup-content .p-phone{font-size:12px;color:#0369a1;font-weight:600}
+.popup-content .p-nav{display:inline-block;margin-top:6px;padding:4px 10px;background:#0ea5e9;color:#fff;border-radius:4px;text-decoration:none;font-size:11px}
+.popup-content .p-nav:hover{background:#0284c7}
+.popup-content .p-tags{margin-top:6px}
+.popup-content .p-tag{display:inline-block;padding:1px 5px;margin:1px;border-radius:3px;font-size:9px;font-weight:600;background:#e0f2fe;color:#0369a1}
+.update-banner{background:#78350f;color:#fbbf24;padding:6px 12px;font-size:11px;text-align:center;cursor:pointer}
+.update-banner:hover{background:#92400e}
+.stats-bar{display:flex;gap:12px;padding:8px 16px;border-bottom:1px solid #334155;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:16px;font-weight:700;color:#0ea5e9}
+.stat-label{font-size:9px;color:#64748b;text-transform:uppercase}
+.map-controls{position:absolute;top:10px;right:10px;z-index:1000;display:flex;flex-direction:column;gap:6px}
+.map-btn{background:#1e293b;color:#e2e8f0;border:1px solid #475569;border-radius:6px;padding:6px 10px;font-size:11px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.map-btn:hover{background:#334155;border-color:#0ea5e9}
+.map-btn.active{background:#0ea5e9;color:#fff;border-color:#0ea5e9}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.nav-link{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:600;text-decoration:none;color:#e2e8f0;cursor:pointer}
+.nav-drive{background:#3b82f6}.nav-transit{background:#22c55e}.nav-walk{background:#f59e0b}
+.nav-drive:hover{background:#2563eb}.nav-transit:hover{background:#16a34a}.nav-walk:hover{background:#d97706}
+@media(max-width:768px){#sidebar{width:100%;height:50vh}#app{flex-direction:column}}
+</style>
+
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div id="app">
+<div id="sidebar">
+<div class="header">
+<h1>CT Behavioral Health & Social Services</h1>
+<p>AJ Anderson, APRN PMHNP-BC | C&L Psychiatry, Bridgeport Hospital</p>
+</div>
+<div class="stats-bar" id="stats"></div>
+<div class="search-box">
+<input type="text" id="search" placeholder="Search facilities, programs, services...">
+</div>
+<div class="system-filter">
+<label>Hospital System</label>
+<select id="system-filter">
+<option value="">All Systems</option>
+<option value="Yale New Haven Health">Yale New Haven Health</option>
+<option value="Hartford HealthCare">Hartford HealthCare</option>
+<option value="Nuvance Health">Nuvance Health</option>
+<option value="Griffin Health">Griffin Health</option>
+<option value="Prospect Medical">Prospect Medical / ECHN</option>
+<option value="UConn Health">UConn Health</option>
+<option value="Middlesex Health">Middlesex Health</option>
+<option value="CT DMHAS">CT DMHAS (State)</option>
+<option value="VA">VA Connecticut</option>
+<option value="Independent">Independent / Other</option>
+</select>
+</div>
+<div class="layers" id="layers"></div>
+<div class="result-count" id="result-count"></div>
+<div class="results" id="results"></div>
+</div>
+<div id="map-container">
+<div id="map"></div>
+</div>
+</div>
+<script>
+const LAYERS = {
+'Psychiatric Hospitals':{color:'#3b82f6',icon:'🏥',visible:true},
+'Hospital Psych Units':{color:'#60a5fa',icon:'🏨',visible:true},
+'Treatment Centers':{color:'#8b5cf6',icon:'🏡',visible:true},
+'IOP/PHP Programs':{color:'#f59e0b',icon:'📋',visible:true},
+'Specialty Programs':{color:'#ec4899',icon:'⭐',visible:true},
+'SUD/Detox':{color:'#a855f7',icon:'💊',visible:true},
+'Community BH Orgs':{color:'#14b8a6',icon:'🤝',visible:true},
+'Crisis Services':{color:'#ef4444',icon:'🚨',visible:true},
+'Recovery Groups (AA/NA/SMART)':{color:'#22c55e',icon:'♻️',visible:false},
+'Support Groups (NAMI/DBSA/Grief)':{color:'#06b6d4',icon:'💬',visible:false},
+'Shelters':{color:'#f97316',icon:'🏠',visible:false},
+'Food Pantries':{color:'#84cc16',icon:'🍎',visible:false},
+'Housing Assistance':{color:'#eab308',icon:'🔑',visible:false},
+'DV Services':{color:'#e11d48',icon:'🛡️',visible:false},
+'Legal Aid':{color:'#6366f1',icon:'⚖️',visible:false},
+'VA/Veterans':{color:'#059669',icon:'🎖️',visible:true},
+'Gyms & Fitness':{color:'#10b981',icon:'💪',visible:false},
+'Yoga & Meditation':{color:'#d946ef',icon:'🧘',visible:false},
+'Cannabis Dispensaries':{color:'#65a30d',icon:'🌿',visible:false},
+'Sober Houses':{color:'#0891b2',icon:'🏘️',visible:false},
+'Primary Care/FQHC':{color:'#f472b6',icon:'🩺',visible:false},
+'Pain/Sleep/Neuro':{color:'#c084fc',icon:'🧠',visible:false},
+'Vocational/Re-entry':{color:'#fb923c',icon:'🔧',visible:false},
+'Elder Services':{color:'#a78bfa',icon:'👴',visible:false},
+'Immigration/Cultural':{color:'#2dd4bf',icon:'🌍',visible:false},
+'Northeast (NY/MA/RI/NJ)':{color:'#94a3b8',icon:'🗺️',visible:false}
+};
+const LOCATIONS=[
+// CT PSYCHIATRIC HOSPITALS
+{name:'Yale New Haven Psychiatric Hospital',layer:'Psychiatric Hospitals',lat:41.3065,lng:-72.9264,city:'New Haven',phone:'203-688-9907',crisis:'203-688-9960',detail:'Major academic psych; 73 beds; DBT track, mood track, child/adolescent IOP, ECT, Spravato',tags:['IP','PHP','IOP','OP','ECT','Ketamine'],web:'ynhh.org/psychiatric',system:'Yale New Haven Health'},
+{name:'Institute of Living (IOL)',layer:'Psychiatric Hospitals',lat:41.7697,lng:-72.6914,city:'Hartford',phone:'860-545-7000',crisis:'860-545-7390',detail:'Adult/adolescent/geriatric units; eating dx; Professionals Program; perinatal day; Autism Center; DBT; TMS; ECT; Spravato; POTENTIAL FEP program',tags:['IP','PHP','IOP','OP','TMS','ECT','Ketamine','Eating Dx'],web:'instituteofliving.org',system:'Hartford HealthCare'},
+{name:'Silver Hill Hospital',layer:'Psychiatric Hospitals',lat:41.1497,lng:-73.4955,city:'New Canaan',phone:'866-542-4455',detail:'Private; DBT IOPs (3 tracks); Women\'s DBT; Adolescent IOP; transitional living; ECT; executive programs',tags:['IP','IOP','Residential','ECT'],web:'silverhillhospital.org',system:'Independent'},
+{name:'Natchaug Hospital',layer:'Psychiatric Hospitals',lat:41.7681,lng:-72.2381,city:'Mansfield Center',phone:'860-456-1311',detail:'57 IP/13 res beds; children 5+; PHP at 10 sites; clinical day schools 6 sites',tags:['IP','PHP','Residential'],web:'natchaug.org',system:'Hartford HealthCare'},
+{name:'Connecticut Valley Hospital',layer:'Psychiatric Hospitals',lat:41.5565,lng:-72.6503,city:'Middletown',phone:'860-262-5000',detail:'State psychiatric hospital; adult general psychiatry & addiction',tags:['IP'],web:'portal.ct.gov/dmhas/cvh',system:'CT DMHAS'},
+{name:'Whiting Forensic Hospital',layer:'Psychiatric Hospitals',lat:41.5533,lng:-72.6508,city:'Middletown',phone:'860-262-5400',detail:'State forensic psychiatric; competency restoration, civil commitment',tags:['IP','Forensic'],web:'portal.ct.gov/dmhas/wfh',system:'CT DMHAS'},
+// CT HOSPITAL PSYCH UNITS
+{name:'Bridgeport Hospital',layer:'Hospital Psych Units',lat:41.1734,lng:-73.1891,city:'Bridgeport',phone:'203-384-3000',crisis:'203-384-3709',detail:'20 beds; REACH IOP (youth 5-17, adolescent 13-17, adult); OCD/ERP clinic (one of 2 in US); C&L service',tags:['IP','IOP','OP','OCD'],web:'bridgeporthospital.org',system:'Yale New Haven Health'},
+{name:'Griffin Hospital',layer:'Hospital Psych Units',lat:41.3239,lng:-73.0828,city:'Derby',phone:'203-735-7421',crisis:'203-732-1597',detail:'14 beds; CT\'s first EmPATH unit; 4 IOPs (Adult MH, Dual Dx, Young Adult 18-26, Trauma Women\'s); PHP; Suboxone/Vivitrol/MAT; 3 locations (Derby/Shelton/Hamden)',tags:['IP','PHP','IOP','EmPATH','SUD','MAT'],web:'griffinhealth.org',system:'Griffin Health',contacts:'Chair: Maria Dawe MD (203-732-7550); Dir: Susan Cutillo; MAT: Meghan Komaromi LCSW (203-732-7541)'},
+{name:'St. Vincent\'s Medical Center',layer:'Hospital Psych Units',lat:41.1910,lng:-73.2108,city:'Bridgeport',phone:'203-576-5000',detail:'IOPs at Norwalk, Bridgeport, Westport; Latino IOP; bilingual staff',tags:['IP','IOP','OP'],web:'stvincents.org',system:'Hartford HealthCare'},
+{name:'Danbury Hospital',layer:'Hospital Psych Units',lat:41.3985,lng:-73.4540,city:'Danbury',phone:'203-739-7000',detail:'BHIOP (DBT skills); mood, anxiety, personality disorders; 4-week program',tags:['IP','IOP','OP'],web:'nuvancehealth.org',system:'Nuvance Health'},
+{name:'Waterbury Hospital',layer:'Hospital Psych Units',lat:41.5576,lng:-73.0413,city:'Waterbury',phone:'203-573-6000',detail:'Open access admissions M-F 8am; adult & adolescent PHP/IOP; DBT, CBT',tags:['IP','PHP','IOP','OP'],web:'wtbyhosp.org',system:'Prospect Medical'},
+{name:'Middlesex Health',layer:'Hospital Psych Units',lat:41.5565,lng:-72.6503,city:'Middletown',phone:'860-358-8801',detail:'4 IOPs: Adult, Dual Dx, Senior (65+), L.I.F.T. (LGBTQIA+); 24/7 mobile crisis',tags:['IP','IOP','OP','Crisis','LGBTQ+'],web:'middlesexhealth.org',system:'Middlesex Health'},
+{name:'Manchester Memorial/ECHN',layer:'Hospital Psych Units',lat:41.7759,lng:-72.5285,city:'Manchester',phone:'860-646-1222',detail:'Adolescent unit 6 beds (12-18); Young Adult 10 beds (18-28); Open Access PHP/IOP walk-in M-F 8am',tags:['IP','PHP','IOP'],web:'echn.org',system:'Prospect/ECHN'},
+{name:'Lawrence + Memorial Hospital',layer:'Hospital Psych Units',lat:41.3469,lng:-72.0944,city:'New London',phone:'860-447-2500',detail:'17 beds; Adult IOP M-F 9am-12pm; depression, bipolar, schizophrenia',tags:['IP','PHP','IOP'],web:'lmhospital.org',system:'Yale New Haven Health'},
+{name:'Hartford Hospital',layer:'Hospital Psych Units',lat:41.7546,lng:-72.6840,city:'Hartford',phone:'860-545-5000',detail:'Connected to IOL system; emergency psych; ECT',tags:['IP','OP','ECT'],web:'hartfordhealthcare.org',system:'Hartford HealthCare'},
+{name:'Norwalk Hospital',layer:'Hospital Psych Units',lat:41.1192,lng:-73.4218,city:'Norwalk',phone:'203-852-2000',detail:'PHP and IOP (4-week); DBT skills; adolescent & adult',tags:['PHP','IOP','OP'],web:'nuvancehealth.org',system:'Nuvance Health'},
+{name:'Greenwich Hospital',layer:'Hospital Psych Units',lat:41.0412,lng:-73.6171,city:'Greenwich',phone:'203-863-3000',detail:'Adult IOP; Adolescent IOP (13-17) 3x/week CBT/DBT/mindfulness',tags:['IOP','OP'],web:'greenwichhospital.org',system:'Yale New Haven Health'},
+{name:'UConn Health',layer:'Hospital Psych Units',lat:41.7318,lng:-72.7956,city:'Farmington',phone:'860-679-6700',detail:'Psychiatric IOP (M/T/F 9am-12pm); Dual Dx IOP; ECT; Psych Trauma Clinic (CPT, PE); Huntington\'s',tags:['IOP','OP','ECT'],web:'uconnhealth.org',system:'UConn Health'},
+{name:'MidState Medical Center',layer:'Hospital Psych Units',lat:41.5384,lng:-72.8065,city:'Meriden',phone:'203-694-0275',detail:'Outpatient behavioral health services',tags:['OP'],web:'hhcbehavioralhealth.org',system:'Hartford HealthCare'},
+{name:'Day Kimball Hospital',layer:'Hospital Psych Units',lat:41.8810,lng:-71.8760,city:'Putnam',phone:'860-928-6541',detail:'15 beds; ages 16+',tags:['IP'],web:'daykimball.org',system:'Day Kimball'},
+{name:'Backus Hospital',layer:'Hospital Psych Units',lat:41.5360,lng:-72.0849,city:'Norwich',phone:'860-889-8331',detail:'Adult psychiatric; PHP, IOP',tags:['IP','PHP','OP'],web:'backushospital.org',system:'Hartford HealthCare'},
+{name:'Hospital of Central CT',layer:'Hospital Psych Units',lat:41.6612,lng:-72.7831,city:'New Britain',phone:'860-224-5011',detail:'IOP MH & SUD at Southington (98 Main St)',tags:['IP','PHP','IOP','OP'],web:'thocc.org',system:'Hartford HealthCare'},
+// TREATMENT CENTERS
+{name:'Mountainside Treatment (Canaan)',layer:'Treatment Centers',lat:42.0226,lng:-73.3207,city:'Canaan',phone:'860-824-5522',detail:'200-acre campus; SUD + co-occurring MH; residential + PHP/IOP/OP',tags:['Residential','PHP','IOP','OP','SUD'],web:'mountainside.com',system:'Independent'},
+{name:'Rushford Center',layer:'Treatment Centers',lat:41.5503,lng:-72.6595,city:'Middletown',phone:'860-346-3600',detail:'SUD, dual dx, adolescent; medical detox; residential; PHP/IOP',tags:['Residential','PHP','IOP','SUD','Detox'],web:'hhcbehavioralhealth.org',system:'Hartford HealthCare'},
+{name:'High Watch Recovery',layer:'Treatment Centers',lat:41.7437,lng:-73.4767,city:'Kent',phone:'860-927-3772',detail:'World\'s first 12-step center (1939); Hilltop PHP (males); nightly AA',tags:['Residential','PHP','SUD'],web:'highwatchrecovery.org',system:'Independent'},
+{name:'Monte Nido Walden',layer:'Treatment Centers',lat:41.5565,lng:-72.6503,city:'Middletown',phone:'860-788-1800',detail:'All levels ED care: IP, residential, PHP, IOP; co-occurring trauma/SUD; acute medical ED unit',tags:['IP','Residential','PHP','IOP','Eating Dx'],web:'montenido.com',system:'Independent'},
+{name:'Stonington Institute',layer:'Treatment Centers',lat:41.4511,lng:-71.8627,city:'N. Stonington',phone:'800-832-1022',detail:'Non-hospital detox; PHP; IOP; Patriot Support (military); 60+ years',tags:['PHP','IOP','SUD','Detox'],web:'stoningtoninstitute.com',system:'Independent'},
+{name:'High Focus Centers (Norwalk)',layer:'Treatment Centers',lat:41.1192,lng:-73.4118,city:'Norwalk',detail:'Teen 10-17; adult; co-occurring PHP/IOP',tags:['PHP','IOP'],web:'highfocuscenters.com',system:'Independent'},
+{name:'LiftWell',layer:'Treatment Centers',lat:41.1412,lng:-73.3571,city:'Westport',phone:'203-908-5603',detail:'PHP (5-6hr/day M-F) & IOP; eating dx; mood/anxiety; trauma; RO-DBT, EMDR, ACT; dietitian',tags:['PHP','IOP','Eating Dx'],web:'liftwellhealth.com',system:'Independent'},
+{name:'BlueSky Behavioral Health',layer:'Treatment Centers',lat:41.3985,lng:-73.4740,city:'Danbury',phone:'888-822-7348',detail:'PHP/IOP; DBT, ERP, CBT; depression, BPD, bipolar, schizo, PTSD',tags:['PHP','IOP'],web:'blueskyrecovery.com',system:'Independent'},
+{name:'Lantana Recovery',layer:'Treatment Centers',lat:41.5776,lng:-73.4091,city:'New Milford',phone:'866-997-2870',detail:'PHP/IOP; Day IOP 9am-noon M-Th; Evening IOP 6-9pm M-Th',tags:['PHP','IOP','SUD'],web:'lantanarecovery.com',system:'Independent'},
+// COMMUNITY BH
+{name:'Wheeler Health (30+ locations)',layer:'Community BH Orgs',lat:41.3565,lng:-72.8300,city:'Statewide',phone:'203-483-9700',detail:'Integrated medical/dental/BH/addiction; LGBTQIA+ responsive; 24/7 ACCESS Line',tags:['PHP','IOP','OP','SUD'],web:'wheelerhealth.org',system:'Wheeler Health'},
+{name:'BHcare',layer:'Community BH Orgs',lat:41.3388,lng:-73.0514,city:'Multiple',phone:'203-736-2601',detail:'BH, emergency services, EAP',tags:['IOP','OP','Crisis'],web:'bhcare.org',system:'Independent'},
+{name:'Wellmore Behavioral Health',layer:'Community BH Orgs',lat:41.5576,lng:-73.0413,city:'Waterbury',phone:'1-855-WELLMORE',detail:'IOP 3hr/day 4x/wk; open access walk-in M-F 11am-3pm; crisis intervention',tags:['PHP','IOP','OP','Crisis','SUD'],web:'wellmore.org',system:'Independent'},
+{name:'CT Mental Health Center (CMHC)',layer:'Community BH Orgs',lat:41.3065,lng:-72.9364,city:'New Haven',phone:'203-974-7300',detail:'STEP first-episode psychosis (referral: 203-200-0140); Hispanic Clinic; SATU dual dx; Yale partnership',tags:['IOP','OP','FEP'],web:'',system:'CT DMHAS'},
+// CRISIS
+{name:'988 Suicide & Crisis Lifeline',layer:'Crisis Services',lat:41.55,lng:-72.65,city:'Statewide',phone:'988',detail:'24/7; DMHAS-funded; rapid access',tags:['Crisis'],web:'preventsuicidect.org',system:'CT DMHAS'},
+{name:'211 Connecticut',layer:'Crisis Services',lat:41.55,lng:-72.75,city:'Statewide',phone:'211',detail:'24/7; Press 1=kids 2=adults; CAN housing: #3 #1',tags:['Crisis'],web:'211ct.org',system:'CT DMHAS'},
+{name:'ACCESS Mental Health for Moms',layer:'Crisis Services',lat:41.55,lng:-72.55,city:'Statewide',phone:'833-978-6667',detail:'Psych consultation for providers treating perinatal MH/SUD',tags:['Perinatal'],web:'accessmhct.com/moms',system:'CT DMHAS'},
+// VA
+{name:'VA CT - West Haven',layer:'VA/Veterans',lat:41.2709,lng:-72.9470,city:'West Haven',phone:'203-932-5711',detail:'28-bed IP psych; PTSD, SUD',tags:['IP','PHP','IOP','OP','SUD'],web:'va.gov/connecticut-health-care',system:'VA'},
+{name:'VA CT - Newington',layer:'VA/Veterans',lat:41.6919,lng:-72.7312,city:'Newington',phone:'860-666-6951',detail:'OP MH, SUD, geriatric',tags:['IOP','OP','SUD'],web:'va.gov/connecticut-health-care',system:'VA'},
+// GRIFFIN IOP LOCATIONS
+{name:'Griffin IOP - Derby (Main)',layer:'IOP/PHP Programs',lat:41.3249,lng:-73.0868,city:'Derby',phone:'203-732-7541',detail:'Adult MH IOP (M/W/Th); Dual Dx Day (T/Th/F 10am-1:20pm) & Evening (M/W/Th 4:40-8pm)',tags:['IOP','Dual Dx'],web:'griffinhealth.org',contacts:'Meghan Komaromi LCSW (203-732-7541)',system:'Griffin Health'},
+{name:'Griffin IOP - Shelton',layer:'IOP/PHP Programs',lat:41.2365,lng:-73.0913,city:'Shelton',phone:'203-538-6244',detail:'Dual Dx track; Trauma-Informed Women\'s IOP (M/W/Th 3:40-7pm, 6-8 wks); Young Adult IOP (18-26)',tags:['IOP','Trauma','Women'],web:'griffinhealth.org',system:'Griffin Health'},
+{name:'Griffin IOP - Hamden',layer:'IOP/PHP Programs',lat:41.3788,lng:-72.9116,city:'Hamden',phone:'203-584-9357',detail:'Mental Health IOP tracks; Young Adult IOP; LGBTQ+ support group',tags:['IOP','LGBTQ+'],web:'griffinhealth.org',system:'Griffin Health'},
+// MORE IOPs
+{name:'Hopewell Teens IOP',layer:'IOP/PHP Programs',lat:41.7060,lng:-72.6080,city:'Glastonbury',phone:'860-650-1300',detail:'Ages 12-18; M-Th 5-8pm; 8-12 weeks; DBT-focused; parents 1-2x/wk',tags:['IOP','Adolescent','DBT'],web:'hopewellhealthsolutions.com',system:'Independent'},
+{name:'New Era Rehabilitation IOP',layer:'IOP/PHP Programs',lat:41.1834,lng:-73.1891,city:'Bridgeport',phone:'203-372-3333',detail:'IOP 8-12 wks 3x/wk; MAT; dual dx; also New Haven location',tags:['IOP','SUD','MAT'],web:'newerarehabilitation.com',system:'Independent'},
+{name:'Mind Dynamics PHP/IOP',layer:'IOP/PHP Programs',lat:41.6729,lng:-72.8587,city:'Plainville',detail:'PHP/IOP; Men\'s Addiction Program; rides provided; CBT, DBT, MI',tags:['PHP','IOP','SUD','Men\'s'],web:'minddynamicsllc.com',system:'Independent'},
+// SPECIALTY
+{name:'Bridgeport Hospital OCD/ERP Clinic',layer:'Specialty Programs',lat:41.1734,lng:-73.1891,city:'Bridgeport',phone:'203-384-3709',detail:'One of only 2 dedicated intensive ERP programs in US; Yale OCD Research Clinic collaboration',tags:['OCD','ERP'],web:'bridgeporthospital.org',system:'Yale New Haven Health'},
+{name:'STEP First-Episode Psychosis',layer:'Specialty Programs',lat:41.3065,lng:-72.9264,city:'New Haven',phone:'203-200-0140',detail:'7-town catchment; psychosis onset within 3 yrs; multidisciplinary; Yale/DMHAS',tags:['FEP'],web:'medicine.yale.edu/psychiatry/step',system:'Yale New Haven Health'},
+{name:'IOL Perinatal Day Program',layer:'Specialty Programs',lat:41.7697,lng:-72.6914,city:'Hartford',phone:'860-545-7000',detail:'Reproductive psychiatrists; accommodates infants <1; therapy, education, skills',tags:['Perinatal','PHP'],web:'instituteofliving.org',system:'Hartford HealthCare'},
+{name:'Mary W. Parker Autism Center',layer:'Specialty Programs',lat:41.7697,lng:-72.6914,city:'Hartford',phone:'860-545-7000',detail:'Clinical assessment & treatment ASD across lifespan; at IOL',tags:['Autism'],web:'instituteofliving.org'},
+{name:'Griffin EmPATH Unit',layer:'Specialty Programs',lat:41.3239,lng:-73.0828,city:'Derby',phone:'203-735-7421',detail:'CT\'s first EmPATH unit; 4300 sq ft; sensory rooms, natural light; crisis alternative to ER',tags:['EmPATH','Crisis'],web:'griffinhealth.org',system:'Griffin Health'},
+// SUD
+{name:'Cornell Scott Detox & MAT',layer:'SUD/Detox',lat:41.3065,lng:-72.9164,city:'New Haven',phone:'203-503-3000',detail:'26-bed coed detox (232 Cedar St); MAT (methadone, Suboxone, Vivitrol); trauma-informed',tags:['Detox','MAT','SUD'],web:'cornellscott.org',system:'Independent'},
+{name:'Griffin MAT Program',layer:'SUD/Detox',lat:41.3239,lng:-73.0828,city:'Derby',phone:'203-732-7541',detail:'Suboxone, Vivitrol (injectable naltrexone), buprenorphine',tags:['MAT','SUD'],web:'griffinhealth.org',system:'Griffin Health'},
+// RECOVERY GROUPS
+{name:'CT AA (Statewide)',layer:'Recovery Groups (AA/NA/SMART)',lat:41.55,lng:-72.85,city:'Statewide',phone:'866-783-7712',detail:'Daily meetings statewide; search by town at ct-aa.org',tags:['AA'],web:'ct-aa.org'},
+{name:'CT NA (Statewide)',layer:'Recovery Groups (AA/NA/SMART)',lat:41.55,lng:-72.45,city:'Statewide',phone:'800-627-3543',detail:'Daily meetings statewide; 9 area service committees',tags:['NA'],web:'ctna.org'},
+{name:'SMART Recovery - Wallingford',layer:'Recovery Groups (AA/NA/SMART)',lat:41.4509,lng:-72.8234,city:'Wallingford',detail:'Tuesdays 6:30-8pm AND 7-8:30pm; hybrid',tags:['SMART'],web:'smartrecoveryct.org'},
+{name:'SMART Recovery - Middletown',layer:'Recovery Groups (AA/NA/SMART)',lat:41.5565,lng:-72.6503,city:'Middletown',detail:'2nd & 4th Tuesdays 3-4pm; hybrid',tags:['SMART'],web:'smartrecoveryct.org'},
+{name:'SMART Recovery - Hartford',layer:'Recovery Groups (AA/NA/SMART)',lat:41.7637,lng:-72.6851,city:'Hartford',detail:'Tuesdays 1:30-2:30pm; in-person',tags:['SMART'],web:'smartrecoveryct.org'},
+{name:'CT Al-Anon',layer:'Recovery Groups (AA/NA/SMART)',lat:41.65,lng:-72.75,city:'Statewide',phone:'888-825-2666',detail:'Support for families of alcoholics; literature center Tuesdays 9:30am-3pm',tags:['Al-Anon'],web:'ctalanon.org'},
+// SUPPORT GROUPS
+{name:'NAMI Connecticut',layer:'Support Groups (NAMI/DBSA/Grief)',lat:41.55,lng:-72.65,city:'Statewide',phone:'860-284-0313',detail:'HelpLine: 800-950-6264; Text NAMI to 62640; free support groups, education, advocacy',tags:['NAMI'],web:'namict.org'},
+{name:'NAMI Southwest CT',layer:'Support Groups (NAMI/DBSA/Grief)',lat:41.17,lng:-73.19,city:'Fairfield County',phone:'203-975-3500',detail:'Weekly meetings, online groups',tags:['NAMI'],web:'namisouthwestct.org'},
+{name:'DBSA Greenwich',layer:'Support Groups (NAMI/DBSA/Grief)',lat:41.0412,lng:-73.6271,city:'Greenwich',detail:'20+ year history; depression & bipolar peer support',tags:['DBSA'],web:'dbsagreenwich.com'},
+{name:'Adam\'s House (Grief)',layer:'Support Groups (NAMI/DBSA/Grief)',lat:41.2365,lng:-73.0913,city:'Shelton',phone:'203-513-2808',detail:'FREE 8-week "Helping Hearts Heal"; ages 5-18; NO COST',tags:['Grief'],web:'adamshousect.org'},
+// SHELTERS
+{name:'Bridgeport Rescue Mission',layer:'Shelters',lat:41.1788,lng:-73.1924,city:'Bridgeport',phone:'203-333-4087',detail:'Emergency shelter, meals, recovery programs; men, women, families',tags:['Shelter','Food'],web:'bridgeportrescuemission.org'},
+{name:'Pacific House',layer:'Shelters',lat:41.0534,lng:-73.5389,city:'Stamford',phone:'203-348-2792',detail:'Emergency shelter, meals, case management; men',tags:['Shelter'],web:'pacifichouse.org'},
+{name:'INSPIRICA',layer:'Shelters',lat:41.0534,lng:-73.5289,city:'Stamford',phone:'203-353-1086',detail:'Emergency & transitional shelter, supportive housing; men, women, families',tags:['Shelter'],web:'inspirica.org'},
+{name:'Columbus House',layer:'Shelters',lat:41.2965,lng:-72.9264,city:'New Haven',phone:'203-401-4400',detail:'Emergency shelter, supportive housing; men, women',tags:['Shelter'],web:'columbushouse.org'},
+// FOOD
+{name:'CT Food Bank',layer:'Food Pantries',lat:41.3165,lng:-72.8964,city:'Statewide',phone:'203-469-5000',detail:'650+ partner programs; mobile pantry in 25+ towns',tags:['Food'],web:'ctfoodbank.org'},
+{name:'CT Foodshare',layer:'Food Pantries',lat:41.7637,lng:-72.6851,city:'Statewide',phone:'860-286-9999',detail:'Food bank network',tags:['Food'],web:'ctfoodshare.org'},
+// DV
+{name:'Center for Family Justice',layer:'DV Services',lat:41.1788,lng:-73.1824,city:'Bridgeport',phone:'888-774-2900',detail:'24/7 hotline; 15-bed transitional, 60-day emergency shelter, child advocacy; sexual assault: 888-999-5545',tags:['DV','Shelter'],web:''},
+{name:'Safe Connect Hotline',layer:'DV Services',lat:41.55,lng:-72.65,city:'Statewide',phone:'888-774-2900',detail:'24/7 DV crisis line; connects to 18 service agencies statewide',tags:['DV','Crisis'],web:''},
+// HOUSING
+{name:'CAN (Coordinated Access Network)',layer:'Housing Assistance',lat:41.55,lng:-72.65,city:'Statewide',phone:'211 → #3 → #1',detail:'Housing First; same/next day assessments; 8 regional networks with navigators',tags:['Housing'],web:''},
+// LEGAL
+{name:'CT Legal Services',layer:'Legal Aid',lat:41.55,lng:-72.65,city:'Statewide (6 offices)',detail:'Civil legal aid; housing, benefits, family law',tags:['Legal'],web:'ctlegal.org'},
+{name:'CT Veterans Legal Center',layer:'Legal Aid',lat:41.27,lng:-72.95,city:'Statewide',phone:'203-479-0375',detail:'Legal aid for veterans',tags:['Legal','Veterans'],web:'ctveteranslegal.org'},
+// NORTHEAST
+{name:'NY-Presbyterian/Westchester',layer:'Northeast (NY/MA/RI/NJ)',lat:41.0341,lng:-73.7694,city:'White Plains, NY',phone:'914-997-5780',detail:'~45 min from BPT; comprehensive academic psych; all ages; eating dx, TMS, ECT',tags:['IP','PHP','IOP','TMS','ECT'],web:'nyp.org/psychiatry',system:'NYP/Weill Cornell'},
+{name:'Four Winds Hospital',layer:'Northeast (NY/MA/RI/NJ)',lat:41.2580,lng:-73.6883,city:'Katonah, NY',phone:'914-763-8151',detail:'~1hr from BPT; child/adolescent/adult; eating dx; dual dx',tags:['IP','PHP','OP'],web:'fourwindshospital.com',system:'Independent'},
+{name:'McLean Hospital',layer:'Northeast (NY/MA/RI/NJ)',lat:42.3931,lng:-71.2078,city:'Belmont, MA',phone:'617-855-2000',detail:'#1 nationally; Klarman ED Center; 2-2.5hr from BPT; all specialties',tags:['IP','PHP','IOP','Residential','TMS','ECT','Ketamine','Eating Dx'],web:'mcleanhospital.org',system:'Mass General Brigham'},
+{name:'Butler Hospital',layer:'Northeast (NY/MA/RI/NJ)',lat:41.8441,lng:-71.3976,city:'Providence, RI',phone:'401-455-6200',detail:'Brown-affiliated; geriatric; eating dx; TMS/ECT/ketamine; ~1.5hr from BPT',tags:['IP','PHP','IOP','TMS','ECT','Ketamine','Eating Dx'],web:'butler.org',system:'Care New England'},
+{name:'Bradley Hospital (Pediatric)',layer:'Northeast (NY/MA/RI/NJ)',lat:41.8127,lng:-71.3728,city:'E. Providence, RI',phone:'401-432-1000',detail:'Nation\'s ONLY exclusively pediatric psych hospital; ages 2-18',tags:['IP','PHP','IOP','OP'],web:'bradleyhospital.org',system:'Lifespan/Brown'},
+{name:'Bellevue Hospital',layer:'Northeast (NY/MA/RI/NJ)',lat:40.7391,lng:-73.9754,city:'NYC',phone:'212-562-4141',detail:'Largest public psych ER in US; forensic',tags:['IP','OP','Forensic'],web:'nychealthandhospitals.org/bellevue',system:'NYC H+H'},
+{name:'Princeton House',layer:'Northeast (NY/MA/RI/NJ)',lat:40.3487,lng:-74.6593,city:'Princeton, NJ',phone:'888-437-1610',detail:'Eating disorders + mood disorders specialty; PHP/IOP/residential',tags:['PHP','IOP','Residential','Eating Dx'],web:'princetonhcs.org',system:'Penn Medicine'},
+// GYMS & FITNESS
+{name:'Central CT Coast YMCA - Bridgeport',layer:'Gyms & Fitness',lat:41.1888,lng:-73.1824,city:'Bridgeport',detail:'Full fitness, pool, youth programs, sliding scale fees',tags:['Gym','Pool'],web:'cccymca.org'},
+{name:'Central CT Coast YMCA - New Haven',layer:'Gyms & Fitness',lat:41.3065,lng:-72.9264,city:'New Haven',detail:'Youth center at 50 Howe St; fitness, community programs',tags:['Gym'],web:'cccymca.org'},
+{name:'Planet Fitness - New Haven',layer:'Gyms & Fitness',lat:41.3165,lng:-72.9564,city:'New Haven',detail:'$10/mo basic; judgment-free zone; 24/5 access',tags:['Gym'],web:'planetfitness.com'},
+{name:'Planet Fitness - Fairfield',layer:'Gyms & Fitness',lat:41.1412,lng:-73.2571,city:'Fairfield',detail:'Low-cost chain gym; 24/5 access',tags:['Gym'],web:'planetfitness.com'},
+{name:'LA Fitness - Trumbull',layer:'Gyms & Fitness',lat:41.2429,lng:-73.2007,city:'Trumbull',detail:'Full-service; pool, group fitness classes',tags:['Gym','Pool'],web:'lafitness.com'},
+{name:'LA Fitness - Stratford',layer:'Gyms & Fitness',lat:41.1845,lng:-73.1324,city:'Stratford',detail:'Full-service fitness club with pool',tags:['Gym','Pool'],web:'lafitness.com'},
+{name:'LA Fitness - Milford',layer:'Gyms & Fitness',lat:41.2226,lng:-73.0564,city:'Milford',detail:'Full-service fitness club',tags:['Gym'],web:'lafitness.com'},
+{name:'Burroughs Community Center',layer:'Gyms & Fitness',lat:41.1688,lng:-73.2024,city:'Bridgeport',detail:'Exercise equipment, billiards, community programs; M-F 9am-6pm',tags:['Community Rec'],web:''},
+{name:'Hall Neighborhood House',layer:'Gyms & Fitness',lat:41.1834,lng:-73.1724,city:'Bridgeport',detail:'140-year community org; education, enrichment, all ages, East Side BPT',tags:['Community Rec'],web:'hallneighborhoodhouse.org'},
+// YOGA & MEDITATION
+{name:'Therapeutic Expressions Yoga Therapy',layer:'Yoga & Meditation',lat:41.3065,lng:-72.9364,city:'New Haven',detail:'Trauma-informed yoga therapy; group & private sessions for trauma recovery',tags:['Yoga','Trauma'],web:'therapeuticexpressionsyogatherapy.com'},
+{name:'Fresh Yoga + MBSR',layer:'Yoga & Meditation',lat:41.3165,lng:-72.9264,city:'New Haven',detail:'MBSR workshops; community yoga classes; mindfulness training',tags:['Yoga','MBSR'],web:'freshyoga.com'},
+{name:'Shambhala Meditation Center',layer:'Yoga & Meditation',lat:41.3788,lng:-72.9116,city:'Hamden',phone:'203-891-5542',detail:'Tibetan Buddhist; free meditation Sun 9:30-11:30am; Heart of Recovery program Tue 7:30-9pm',tags:['Meditation','Recovery'],web:'newhaven.shambhala.org'},
+{name:'New Haven Zen Center',layer:'Yoga & Meditation',lat:41.3165,lng:-72.9464,city:'New Haven',detail:'Kwan Um School of Zen; intro sessions available; weekly sitting',tags:['Zen','Meditation'],web:'newhavenzen.org'},
+{name:'Buddhist Faith Fellowship',layer:'Yoga & Meditation',lat:41.5565,lng:-72.6503,city:'Middletown',detail:'Zen/Shin meditation; silent retreats; sound bathing; mindful outdoor activities',tags:['Meditation'],web:'bffct.org'},
+{name:'Yale Stress Center MBSR',layer:'Yoga & Meditation',lat:41.3065,lng:-72.9264,city:'New Haven',detail:'8-week evidence-based MBSR course; stress, pain, illness management',tags:['MBSR'],web:'medicine.yale.edu/stresscenter',system:'Yale New Haven Health'},
+{name:'Hartford Hospital MBSR',layer:'Yoga & Meditation',lat:41.7546,lng:-72.6840,city:'Hartford',detail:'8-week MBSR program for managing stress, illness, pain',tags:['MBSR'],web:'hartfordhospital.org',system:'Hartford HealthCare'},
+{name:'Odiyana Kadampa Buddhist Center',layer:'Yoga & Meditation',lat:41.5565,lng:-72.7503,city:'CT/MA/VT',detail:'Meditation & Buddhism classes; no experience needed; drop-in welcome',tags:['Meditation'],web:'meditationinconnecticut.org'},
+// CANNABIS DISPENSARIES
+{name:'Affinity Dispensary - New Haven',layer:'Cannabis Dispensaries',lat:41.3265,lng:-72.9664,city:'New Haven',detail:'Adult-use & medical cannabis; online pre-order required; 1351 Whalley Ave',tags:['Medical','Recreational'],web:'affinityct.com'},
+{name:'Affinity Dispensary - Bridgeport',layer:'Cannabis Dispensaries',lat:41.1734,lng:-73.1591,city:'Bridgeport',detail:'Adult-use & medical cannabis; 2000 Commerce Dr',tags:['Medical','Recreational'],web:'affinityct.com'},
+{name:'Lit New Haven',layer:'Cannabis Dispensaries',lat:41.3065,lng:-72.9064,city:'New Haven',detail:'Recreational cannabis; age 21+; 169 East St',tags:['Recreational'],web:'litnewhaven.com'},
+{name:'Bluepoint Wellness',layer:'Cannabis Dispensaries',lat:41.2765,lng:-72.8164,city:'Branford',detail:'CT licensed medical marijuana dispensary',tags:['Medical'],web:'bluepointwellnessct.com'},
+{name:'Fine Fettle (10+ locations)',layer:'Cannabis Dispensaries',lat:41.3565,lng:-72.9064,city:'Multiple',detail:'Medical & recreational; statewide chain; 10+ locations across CT',tags:['Medical','Recreational'],web:'finefettle.com'},
+// SOBER HOUSES
+{name:'Oxford House Rock Park',layer:'Sober Houses',lat:41.3065,lng:-72.9264,city:'New Haven',detail:'Democratic peer-run recovery housing; self-supporting',tags:['Oxford House'],web:'ctoxfordhouse.org'},
+{name:'Park Place Sober House',layer:'Sober Houses',lat:41.1788,lng:-73.1824,city:'Bridgeport',detail:'CTARR-certified drug/alcohol-free residence for adults in recovery',tags:['Certified'],web:'parkplace1860.net'},
+{name:'Recovery Community Development',layer:'Sober Houses',lat:41.1834,lng:-73.1924,city:'Bridgeport',detail:'Affordable supervised housing for men in recovery',tags:['Men'],web:'recovcd.org'},
+{name:'Wings of Hope Recovery',layer:'Sober Houses',lat:41.3165,lng:-72.9464,city:'New Haven',detail:'Structured peer-support; separate women\'s and men\'s sober living',tags:['Men','Women'],web:''},
+{name:'Vanderburgh Sober Living',layer:'Sober Houses',lat:41.6612,lng:-72.7831,city:'New Britain',detail:'Recovery housing and resources',tags:['Mixed'],web:'vanderburghhouse.com'},
+// PRIMARY CARE / FQHC
+{name:'Southwest Community Health Center',layer:'Primary Care/FQHC',lat:41.1688,lng:-73.2024,city:'Bridgeport',detail:'FQHC; medical, dental, behavioral health; sliding fee scale',tags:['FQHC'],web:'swchc.org'},
+{name:'Fair Haven Community Health',layer:'Primary Care/FQHC',lat:41.3165,lng:-72.9064,city:'New Haven',detail:'FQHC; preventive/primary care regardless of ability to pay',tags:['FQHC'],web:''},
+{name:'Cornell Scott Hill Health Center',layer:'Primary Care/FQHC',lat:41.3065,lng:-72.9164,city:'New Haven',phone:'203-503-3000',detail:'Comprehensive FQHC; medical, dental, BH, SUD, detox; sliding scale',tags:['FQHC','SUD'],web:'cornellscott.org',system:'Independent'},
+// PAIN / SLEEP / NEURO
+{name:'Sleep Wellness Center at Griffin',layer:'Pain/Sleep/Neuro',lat:41.3239,lng:-73.0828,city:'Derby',phone:'203-732-7571',detail:'AASM highest accreditation (only 13 in CT); sleep studies',tags:['Sleep'],web:'griffinhealth.org',system:'Griffin Health'},
+{name:'Yale Medicine Sleep Program',layer:'Pain/Sleep/Neuro',lat:41.3065,lng:-72.9264,city:'New Haven',detail:'Apnea, insomnia, narcolepsy, RLS; AASM-accredited',tags:['Sleep'],web:'yalemedicine.org',system:'Yale New Haven Health'},
+{name:'Sleep Disorders Center of CT',layer:'Pain/Sleep/Neuro',lat:41.2765,lng:-72.8164,city:'Branford/Hamden/Milford/Norwalk',detail:'AASM-accredited; 4 locations across CT',tags:['Sleep'],web:'sleepct.com'},
+{name:'Pain & Spine Specialists of CT',layer:'Pain/Sleep/Neuro',lat:41.3565,lng:-72.9264,city:'Multiple (5 locations)',detail:'Leading pain mgmt group; interventional pain procedures',tags:['Pain'],web:'treatingpain.com'},
+{name:'Yale Medicine Neuropsychology',layer:'Pain/Sleep/Neuro',lat:41.3065,lng:-72.9264,city:'New Haven',detail:'Expert in cognitive/behavioral changes from medical/brain injuries',tags:['Neuropsych'],web:'yalemedicine.org',system:'Yale New Haven Health'},
+{name:'CT Neuropsychology Group',layer:'Pain/Sleep/Neuro',lat:41.1412,lng:-73.3571,city:'Westport',detail:'Comprehensive evals for cognitive, learning, emotional; therapy, parent support',tags:['Neuropsych'],web:'ctneuropsych.com'},
+// VOCATIONAL / RE-ENTRY
+{name:'CT Bureau of Rehabilitation Services',layer:'Vocational/Re-entry',lat:41.7637,lng:-72.6851,city:'Statewide',detail:'Counseling, job search, training for individuals with disabilities; Level Up (16-22)',tags:['Vocational'],web:'portal.ct.gov/rehabilitationservices'},
+{name:'CPA Reentry Welcome Centers',layer:'Vocational/Re-entry',lat:41.7637,lng:-72.6851,city:'Hartford/Waterbury',detail:'Centralized hubs for formerly incarcerated; SUD/MH, housing, jobs, peer support',tags:['Re-entry'],web:'cpa-ct.org/reentry'},
+{name:'Disability Rights CT (DRCT)',layer:'Vocational/Re-entry',lat:41.7637,lng:-72.6851,city:'Statewide',detail:'PABSS advocacy for SSDI/SSI beneficiaries; fair hearing prep',tags:['SSDI/SSI'],web:'disrightsct.org'},
+// ELDER SERVICES
+{name:'SW CT Area Agency on Aging',layer:'Elder Services',lat:41.1192,lng:-73.4218,city:'Fairfield County',detail:'Medicare/Medicaid navigation, meals, senior day, home care, counseling',tags:['60+'],web:'swcaa.org'},
+{name:'ElderHouse Adult Day Center',layer:'Elder Services',lat:41.1412,lng:-73.2571,city:'Fairfield County',detail:'State-certified; socialization, exercise, music, meals, transport, respite care',tags:['60+'],web:'elderhouse.org'},
+// IMMIGRATION / CULTURAL
+{name:'CT Institute for Refugees & Immigrants',layer:'Immigration/Cultural',lat:41.0534,lng:-73.5389,city:'Stamford/BPT/Waterbury/HFD',detail:'DOJ-recognized; affordable immigration legal services; 4 offices',tags:['Immigration'],web:'cirict.org'},
+{name:'IRIS (Integrated Refugee & Immigrant Services)',layer:'Immigration/Cultural',lat:41.3065,lng:-72.9264,city:'New Haven',phone:'203-562-2095',detail:'Refugee/immigrant legal services and comprehensive support',tags:['Refugee'],web:''},
+{name:'Hispanic Health Council',layer:'Immigration/Cultural',lat:41.7637,lng:-72.6851,city:'Hartford',detail:'Nationally recognized; health, education, cultural activities for Latino community',tags:['Latino'],web:'hispanichealthcouncil.org'},
+{name:'Triangle Community Center',layer:'Immigration/Cultural',lat:41.1192,lng:-73.4218,city:'Norwalk',detail:'LGBTQ+ community center; support, education, advocacy',tags:['LGBTQ+'],web:''},
+];
+// HOME BASE (Bridgeport Hospital)
+const HOME_LAT=41.1734,HOME_LNG=-73.1891;
+// CLOSURES / ALERTS
+const CLOSURES=[
+{match:'Connecticut Valley Hospital',msg:'📋 State facility—referral through DMHAS local mental health authority required',severity:'blue'},
+{match:'Whiting Forensic',msg:'📋 Forensic facility—court-ordered admissions only',severity:'blue'},
+{match:'988 Suicide',msg:'⚠️ If in crisis, call 988 now—24/7 support available',severity:'yellow'},
+{match:'Safe Connect',msg:'⚠️ If in immediate danger, call 911 first, then Safe Connect',severity:'yellow'},
+{match:'ACCESS Mental Health for Moms',msg:'📋 Provider consultation line—not for direct patient use',severity:'blue'},
+{match:'Silver Hill',msg:'📋 Private pay / limited insurance—verify coverage before referral',severity:'blue'},
+{match:'McLean',msg:'📋 2-2.5hr from BPT—consider for specialty referrals only',severity:'blue'},
+{match:'Bellevue',msg:'📋 NYC H+H—2hr+ drive; use for forensic/specialty only',severity:'blue'},
+{match:'CAN (Coordinated',msg:'⚠️ Call 211 → press 3 → press 1 for housing intake',severity:'yellow'}
+];
+// Pre-compute drive distance from Bridgeport Hospital
+LOCATIONS.forEach(loc=>{
+    const R=3959;
+    const dLat=(loc.lat-HOME_LAT)*Math.PI/180;
+    const dLng=(loc.lng-HOME_LNG)*Math.PI/180;
+    const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(HOME_LAT*Math.PI/180)*Math.cos(loc.lat*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+    const c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    loc.distMi=Math.round(R*c);
+    loc.driveMin=Math.round(loc.distMi/35*60); // lower avg speed for local/urban
+    loc.driveHr=(loc.driveMin/60).toFixed(1);
+});
+// Apply closure alerts
+LOCATIONS.forEach(loc=>{
+    const cl=CLOSURES.find(c=>loc.name.includes(c.match));
+    if(cl){loc.alert=cl.msg;loc.alertSeverity=cl.severity;}
+});
+function formatDrive(loc){
+    if(!loc.driveMin||loc.distMi<2)return '';
+    if(loc.driveMin<60)return`~${loc.driveMin}min`;
+    return`~${loc.driveHr}hr`;
+}
+// MAP INIT
+const map=L.map('map',{zoomControl:true}).setView([41.35,-72.9],9);
+// Tile layers
+const darkTile=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19});
+const streetTile=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:19});
+const satTile=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Esri World Imagery',maxZoom:19});
+darkTile.addTo(map);
+let currentTile='dark';
+// Map view controls
+const ctrlDiv=document.createElement('div');
+ctrlDiv.className='map-controls';
+ctrlDiv.innerHTML=`<button class="map-btn active" id="btn-dark">Dark</button><button class="map-btn" id="btn-street">Street</button><button class="map-btn" id="btn-sat">Satellite</button>`;
+document.getElementById('map-container').appendChild(ctrlDiv);
+function switchTile(name){
+    map.removeLayer(darkTile);map.removeLayer(streetTile);map.removeLayer(satTile);
+    if(name==='dark')darkTile.addTo(map);
+    else if(name==='street')streetTile.addTo(map);
+    else satTile.addTo(map);
+    currentTile=name;
+    document.querySelectorAll('.map-controls .map-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('btn-'+name).classList.add('active');
+}
+document.getElementById('btn-dark').addEventListener('click',()=>switchTile('dark'));
+document.getElementById('btn-street').addEventListener('click',()=>switchTile('street'));
+document.getElementById('btn-sat').addEventListener('click',()=>switchTile('sat'));
+let markers=[];
+let activeFilters=new Set(Object.keys(LAYERS).filter(k=>LAYERS[k].visible));
+function createIcon(color){
+return L.divIcon({className:'',html:`<div style="width:12px;height:12px;border-radius:50%;background:${color};border:2px solid rgba(255,255,255,.6);box-shadow:0 0 6px ${color}80"></div>`,iconSize:[12,12],iconAnchor:[6,6]});}
+function getNavLink(lat,lng,mode){
+return`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=${mode}`;}
+function renderMarkers(){
+markers.forEach(m=>map.removeLayer(m.marker));
+markers=[];
+const q=document.getElementById('search').value.toLowerCase();
+const sysFilter=document.getElementById('system-filter').value;
+let visible=LOCATIONS.filter(loc=>{
+if(!activeFilters.has(loc.layer))return false;
+if(sysFilter&&(loc.system||'')!==sysFilter)return false;
+if(q&&!loc.name.toLowerCase().includes(q)&&!loc.city.toLowerCase().includes(q)&&!(loc.detail||'').toLowerCase().includes(q)&&!(loc.tags||[]).join(' ').toLowerCase().includes(q)&&!(loc.system||'').toLowerCase().includes(q))return false;
+return true;
+});
+visible.forEach(loc=>{
+const color=LAYERS[loc.layer]?.color||'#fff';
+const marker=L.marker([loc.lat,loc.lng],{icon:createIcon(color)}).addTo(map);
+const tagsHtml=(loc.tags||[]).map(t=>`<span class="p-tag">${t}</span>`).join('');
+const navDrive=getNavLink(loc.lat,loc.lng,'driving');
+const navTransit=getNavLink(loc.lat,loc.lng,'transit');
+const navWalk=getNavLink(loc.lat,loc.lng,'walking');
+marker.bindPopup(`<div class="popup-content"><h3>${loc.name}</h3><div class="p-type">${loc.layer} • ${loc.city}${loc.system?' • '+loc.system:''}</div>${loc.phone?`<div class="p-phone">📞 ${loc.phone}</div>`:''}${loc.crisis?`<div class="p-phone">🚨 Crisis: ${loc.crisis}</div>`:''}${loc.contacts?`<div class="p-detail">👤 ${loc.contacts}</div>`:''}  <div class="p-detail">${loc.detail||''}</div><div class="p-tags">${tagsHtml}</div><div class="nav-links"><a href="${navDrive}" target="_blank" class="nav-link nav-drive">🚗 Drive</a><a href="${navTransit}" target="_blank" class="nav-link nav-transit">🚌 Transit</a><a href="${navWalk}" target="_blank" class="nav-link nav-walk">🚶 Walk</a></div>${loc.alert?`<div class="p-alert p-alert-${loc.alertSeverity||'blue'}" style="margin-top:4px;padding:4px 8px;border-radius:4px;font-size:11px;${loc.alertSeverity==='yellow'?'background:#fef3c7;color:#92400e':loc.alertSeverity==='red'?'background:#fee2e2;color:#991b1b':'background:#dbeafe;color:#1e40af'}">${loc.alert}</div>`:''}${loc.distMi>1?`<div style="font-size:11px;color:#6b7280;margin-top:4px">🚗 ${formatDrive(loc)} from BPT Hospital</div>`:''}${loc.web?`<a href="https://${loc.web}" target="_blank" class="p-nav" style="margin-top:4px;display:inline-block">🌐 Website</a>`:''}</div>`);
+markers.push({marker,loc});
+});
+document.getElementById('result-count').textContent=`${visible.length} resources shown`;
+renderResults(visible);
+renderStats(visible);
+}
+function renderResults(visible){
+const el=document.getElementById('results');
+el.innerHTML=visible.map(loc=>{
+const color=LAYERS[loc.layer]?.color||'#fff';
+const icon=LAYERS[loc.layer]?.icon||'📍';
+const tagsHtml=(loc.tags||[]).map(t=>{
+let cls='tag';
+if(t==='IP')cls+=' tag-ip';else if(t==='PHP')cls+=' tag-php';else if(t==='IOP')cls+=' tag-iop';
+else if(t==='Crisis'||t==='EmPATH')cls+=' tag-crisis';else if(t.includes('SUD')||t==='MAT'||t==='Detox')cls+=' tag-sud';
+else if(t==='Shelter')cls+=' tag-shelter';else if(t==='Food')cls+=' tag-food';
+else if(t==='Gym'||t==='Pool'||t==='Community Rec')cls+=' tag-gym';
+else if(t==='Yoga'||t==='Meditation'||t==='MBSR'||t==='Zen')cls+=' tag-yoga';
+else if(t==='Medical'||t==='Recreational')cls+=' tag-cannabis';
+else if(t==='FQHC'||t==='Sleep'||t==='Pain'||t==='Neuropsych')cls+=' tag-bio';
+else cls+=' tag-recovery';
+return`<span class="${cls}">${t}</span>`;}).join('');
+const nd=getNavLink(loc.lat,loc.lng,'driving'),nt=getNavLink(loc.lat,loc.lng,'transit'),nw=getNavLink(loc.lat,loc.lng,'walking');
+return`<div class="result-card" data-lat="${loc.lat}" data-lng="${loc.lng}"><div class="result-name">${icon} ${loc.name}</div><div class="result-type" style="color:${color}">${loc.layer} • ${loc.city}${loc.system?' • '+loc.system:''}</div>${loc.phone?`<div class="result-phone">📞 ${loc.phone}${loc.crisis?' | 🚨 '+loc.crisis:''}</div>`:''}${loc.contacts?`<div class="result-detail">👤 ${loc.contacts}</div>`:''}  <div class="result-detail">${(loc.detail||'').substring(0,120)}${(loc.detail||'').length>120?'...':''}</div><div class="result-tags">${tagsHtml}</div>${loc.alert?`<div class="result-alert alert-bg-${loc.alertSeverity||'blue'}">${loc.alert}</div>`:''}${loc.distMi>1?`<div class="result-drive">🚗 ${formatDrive(loc)} from BPT</div>`:''}  <div class="nav-links"><a href="${nd}" target="_blank" class="nav-link nav-drive">🚗</a><a href="${nt}" target="_blank" class="nav-link nav-transit">🚌</a><a href="${nw}" target="_blank" class="nav-link nav-walk">🚶</a>${loc.web?`<a href="https://${loc.web}" target="_blank" class="nav-link" style="background:#6366f1">🌐</a>`:''}</div></div>`;}).join('');
+el.querySelectorAll('.result-card').forEach(card=>{
+card.addEventListener('click',e=>{
+if(e.target.tagName==='A')return;
+const lat=parseFloat(card.dataset.lat),lng=parseFloat(card.dataset.lng);
+map.setView([lat,lng],14);
+const m=markers.find(m=>m.loc.lat===lat&&m.loc.lng===lng);
+if(m)m.marker.openPopup();
+});});
+}
+function renderStats(visible){
+const cats={};
+visible.forEach(l=>{if(!cats[l.layer])cats[l.layer]=0;cats[l.layer]++;});
+const el=document.getElementById('stats');
+el.innerHTML=`<div class="stat"><div class="stat-num">${visible.length}</div><div class="stat-label">Total</div></div>`+
+Object.entries(cats).slice(0,5).map(([k,v])=>`<div class="stat"><div class="stat-num" style="color:${LAYERS[k]?.color||'#fff'}">${v}</div><div class="stat-label">${k.split('(')[0].trim().substring(0,12)}</div></div>`).join('')+
+`<div style="font-size:9px;color:#475569;margin-left:auto">Updated: Mar 2026</div>`;
+}
+function renderLayers(){
+const el=document.getElementById('layers');
+const allOn=activeFilters.size===Object.keys(LAYERS).length;
+el.innerHTML=`<h3>Layers <span id="toggle-all" style="cursor:pointer;color:#0ea5e9;font-size:10px;text-transform:none;letter-spacing:0">${allOn?'Hide All':'Show All'}</span></h3>`;
+document.getElementById('toggle-all').addEventListener('click',()=>{
+    if(activeFilters.size===Object.keys(LAYERS).length)activeFilters.clear();
+    else Object.keys(LAYERS).forEach(k=>activeFilters.add(k));
+    renderLayers();renderMarkers();
+});
+Object.entries(LAYERS).forEach(([name,cfg])=>{
+const active=activeFilters.has(name);
+const div=document.createElement('div');
+div.className='layer-item';
+const cnt=LOCATIONS.filter(l=>l.layer===name).length;
+div.innerHTML=`<div class="layer-check ${active?'active':''}" data-layer="${name}">${active?'✓':''}</div><div class="layer-dot" style="background:${cfg.color}"></div><span>${cfg.icon} ${name} (${cnt})</span>`;
+div.querySelector('.layer-check').addEventListener('click',function(){
+if(activeFilters.has(name))activeFilters.delete(name);else activeFilters.add(name);
+renderLayers();renderMarkers();
+});
+el.appendChild(div);
+});
+}
+document.getElementById('search').addEventListener('input',renderMarkers);
+document.getElementById('system-filter').addEventListener('change',renderMarkers);
+renderLayers();
+renderMarkers();
+</script>
+
+<script src="../site.js"></script>
+</body>
+</html>

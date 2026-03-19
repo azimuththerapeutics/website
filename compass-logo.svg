@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <!-- Gold gradient for main compass elements -->
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D4B87A"/>
+      <stop offset="50%" stop-color="#C9A96E"/>
+      <stop offset="100%" stop-color="#A8894F"/>
+    </linearGradient>
+    <!-- Subtle radial glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#C9A96E" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#C9A96E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <g transform="translate(200,200)">
+    <!-- Background glow -->
+    <circle cx="0" cy="0" r="180" fill="url(#centerGlow)"/>
+
+    <!-- Outer decorative ring -->
+    <circle cx="0" cy="0" r="155" fill="none" stroke="#C9A96E" stroke-width="2" opacity="0.3"/>
+    <circle cx="0" cy="0" r="150" fill="none" stroke="#C9A96E" stroke-width="1" opacity="0.5"/>
+
+    <!-- Degree tick marks (every 15 degrees) -->
+    <g stroke="#C9A96E" stroke-width="1" opacity="0.35">
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(15)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(30)"/>
+      <line x1="0" y1="-140" x2="0" y2="-150" transform="rotate(45)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(60)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(75)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(105)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(120)"/>
+      <line x1="0" y1="-140" x2="0" y2="-150" transform="rotate(135)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(150)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(165)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(195)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(210)"/>
+      <line x1="0" y1="-140" x2="0" y2="-150" transform="rotate(225)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(240)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(255)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(285)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(300)"/>
+      <line x1="0" y1="-140" x2="0" y2="-150" transform="rotate(315)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(330)"/>
+      <line x1="0" y1="-142" x2="0" y2="-150" transform="rotate(345)"/>
+    </g>
+
+    <!-- Cardinal tick marks (larger) -->
+    <g stroke="#C9A96E" stroke-width="2" opacity="0.6">
+      <line x1="0" y1="-138" x2="0" y2="-155"/>
+      <line x1="0" y1="138" x2="0" y2="155"/>
+      <line x1="-138" y1="0" x2="-155" y2="0"/>
+      <line x1="138" y1="0" x2="155" y2="0"/>
+    </g>
+
+    <!-- Inner decorative ring -->
+    <circle cx="0" cy="0" r="120" fill="none" stroke="#C9A96E" stroke-width="1.5" opacity="0.4"/>
+    <circle cx="0" cy="0" r="115" fill="none" stroke="#C9A96E" stroke-width="0.5" opacity="0.3"/>
+
+    <!-- Intercardinal thin arrows (NE, SE, SW, NW) -->
+    <g fill="#C9A96E" opacity="0.45">
+      <!-- NE -->
+      <polygon points="78,-78 20,-12 12,-20"/>
+      <polygon points="78,-78 12,-20 20,-12" fill="#C9A96E" opacity="0.25"/>
+      <!-- SE -->
+      <polygon points="78,78 20,12 12,20"/>
+      <!-- SW -->
+      <polygon points="-78,78 -20,12 -12,20"/>
+      <!-- NW -->
+      <polygon points="-78,-78 -20,-12 -12,-20"/>
+    </g>
+
+    <!-- North arrow (primary - filled gold) -->
+    <polygon points="0,-135 -18,-30 0,-50 18,-30" fill="url(#goldGrad)"/>
+    <!-- North arrow shadow side -->
+    <polygon points="0,-135 0,-50 18,-30" fill="#A8894F" opacity="0.7"/>
+
+    <!-- South arrow -->
+    <polygon points="0,135 -18,30 0,50 18,30" fill="#C9A96E" opacity="0.5"/>
+    <polygon points="0,135 0,50 18,30" fill="#A8894F" opacity="0.35"/>
+
+    <!-- East arrow -->
+    <polygon points="135,0 30,-18 50,0 30,18" fill="#C9A96E" opacity="0.5"/>
+    <polygon points="135,0 50,0 30,18" fill="#A8894F" opacity="0.35"/>
+
+    <!-- West arrow -->
+    <polygon points="-135,0 -30,-18 -50,0 -30,18" fill="#C9A96E" opacity="0.5"/>
+    <polygon points="-135,0 -50,0 -30,18" fill="#A8894F" opacity="0.35"/>
+
+    <!-- Center decorative circles -->
+    <circle cx="0" cy="0" r="22" fill="none" stroke="#C9A96E" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="0" cy="0" r="15" fill="#C9A96E" opacity="0.15"/>
+    <circle cx="0" cy="0" r="8" fill="url(#goldGrad)"/>
+    <circle cx="0" cy="0" r="3" fill="#1B3A5C"/>
+
+    <!-- Cardinal labels -->
+    <text x="0" y="-160" text-anchor="middle" font-family="'Cormorant Garamond', Georgia, serif" font-size="22" font-weight="700" fill="#C9A96E" letter-spacing="3">N</text>
+    <text x="0" y="175" text-anchor="middle" font-family="'Cormorant Garamond', Georgia, serif" font-size="18" font-weight="600" fill="#C9A96E" opacity="0.7" letter-spacing="2">S</text>
+    <text x="172" y="7" text-anchor="middle" font-family="'Cormorant Garamond', Georgia, serif" font-size="18" font-weight="600" fill="#C9A96E" opacity="0.7" letter-spacing="2">E</text>
+    <text x="-172" y="7" text-anchor="middle" font-family="'Cormorant Garamond', Georgia, serif" font-size="18" font-weight="600" fill="#C9A96E" opacity="0.7" letter-spacing="2">W</text>
+  </g>
+</svg>

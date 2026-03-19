@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#1B3A5C"/>
+  <!-- Compass Rose -->
+  <g transform="translate(32,32)">
+    <!-- Outer ring -->
+    <circle cx="0" cy="0" r="22" fill="none" stroke="#C9A96E" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="0" cy="0" r="19" fill="none" stroke="#C9A96E" stroke-width="0.5" opacity="0.4"/>
+    <!-- Cardinal points - main arrows -->
+    <!-- North (top) -->
+    <polygon points="0,-24 -4,-8 0,-12 4,-8" fill="#C9A96E"/>
+    <!-- South (bottom) -->
+    <polygon points="0,24 -4,8 0,12 4,8" fill="#C9A96E" opacity="0.6"/>
+    <!-- East (right) -->
+    <polygon points="24,0 8,-4 12,0 8,4" fill="#C9A96E" opacity="0.6"/>
+    <!-- West (left) -->
+    <polygon points="-24,0 -8,-4 -12,0 -8,4" fill="#C9A96E" opacity="0.6"/>
+    <!-- Intercardinal points - thin lines -->
+    <line x1="0" y1="0" x2="15" y2="-15" stroke="#C9A96E" stroke-width="0.8" opacity="0.4"/>
+    <line x1="0" y1="0" x2="15" y2="15" stroke="#C9A96E" stroke-width="0.8" opacity="0.4"/>
+    <line x1="0" y1="0" x2="-15" y2="-15" stroke="#C9A96E" stroke-width="0.8" opacity="0.4"/>
+    <line x1="0" y1="0" x2="-15" y2="15" stroke="#C9A96E" stroke-width="0.8" opacity="0.4"/>
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="2.5" fill="#C9A96E"/>
+    <circle cx="0" cy="0" r="1" fill="#1B3A5C"/>
+    <!-- N label -->
+    <text x="0" y="-25.5" text-anchor="middle" font-family="Georgia, serif" font-size="5" font-weight="700" fill="#C9A96E">N</text>
+  </g>
+</svg>
