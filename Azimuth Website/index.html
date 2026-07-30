@@ -191,6 +191,24 @@ section[id]{scroll-margin-top:84px}
 .portal .pbtns{display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto}
 .portal .note{font-size:.72rem;color:rgba(255,255,255,.42);margin-top:18px;line-height:1.6}
 .portal .note a{color:rgba(255,255,255,.66)}
+/* waitlist form */
+.wl-form{max-width:380px;margin:0 auto;text-align:left}
+.wl-field{margin-bottom:16px}
+.wl-field label{display:block;font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:7px}
+.wl-field input,.wl-field select,.wl-field textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.16);border-radius:var(--r);color:#fff;font-family:var(--sans);font-size:.95rem;padding:12px 14px;transition:border-color .2s ease}
+.wl-field select{appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23C9A96E' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.wl-field select option{background:var(--basalt);color:#fff}
+.wl-field textarea{min-height:88px;resize:vertical}
+.wl-field input::placeholder,.wl-field textarea::placeholder{color:rgba(255,255,255,.3)}
+.wl-field input:focus,.wl-field select:focus,.wl-field textarea:focus{outline:none;border-color:var(--brass)}
+.wl-form .btn{width:100%;justify-content:center}
+.wl-hint{font-size:.72rem;color:rgba(255,255,255,.42);margin:-8px 0 16px;line-height:1.5}
+.wl-error{display:none;font-size:.82rem;color:#e8b4a8;margin-top:14px;line-height:1.6;text-align:center}
+.wl-error a{color:var(--brass)}
+.wl-success{display:none;padding:26px 4px 6px}
+.wl-success .wsm{display:block;width:56px;margin:0 auto 20px;color:var(--brass)}
+.wl-success h4{font-family:var(--serif);font-weight:500;color:#fff;font-size:1.45rem;margin-bottom:12px}
+.wl-success p{margin-bottom:0}
 /* closing */
 .closing{position:relative;text-align:center;background:radial-gradient(120% 120% at 50% 0%,#232c3d 0%,var(--basalt) 60%);color:#fff;overflow:hidden}
 .closing h2{color:#fff;max-width:720px;margin:0 auto 18px}
@@ -1108,7 +1126,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
     </nav>
     <div class="nav-cta">
       <a href="tel:2037186513" class="nav-phone">203&#8201;·&#8201;718&#8201;·&#8201;6513</a>
-      <a href="#contact" class="btn-nav btn">Schedule a Consultation</a>
+      <a href="#contact" class="btn-nav btn">Join the Waitlist</a>
       <button class="hamb" id="hamb" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -1302,8 +1320,9 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
   <div class="wrap contact-grid">
     <div class="fade">
       <span class="eyebrow">Connect</span>
-      <h2>Begin with a conversation</h2>
-      <p style="margin-top:16px;color:rgba(255,255,255,.72)">New clients are accepted on a limited basis, with priority given to referrals from current patients and providers. Reach out and we'll find the right path — even if it isn't here.</p>
+      <h2>Currently accepting patients by waitlist</h2>
+      <p style="margin-top:16px;color:rgba(255,255,255,.72)">The work here is intimate and comprehensive — one clinician, an intentionally small panel, and the time each patient's care actually deserves. That depth is the whole point, and it means space is limited. New patients are currently welcomed from the waitlist as space opens.</p>
+      <p style="margin-top:14px;color:rgba(255,255,255,.72)">Questions in the meantime? Reach out and we'll find the right path — even if it isn't here.</p>
       <a href="tel:2037186513" class="contact-phone">203 · 718 · 6513</a>
       <div class="crow">
         <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
@@ -1315,12 +1334,46 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       </div>
     </div>
     <div class="fade">
-      <div class="portal">
-        <h3>Schedule a consultation</h3>
-        <p>Start with an email or a call. We'll talk through what you're looking for, the concierge model, and whether Azimuth is the right fit.</p>
-        <div class="pbtns">
-          <a href="mailto:info@azimuththerapeutics.com?subject=Consultation%20Request" class="btn btn-brass" style="justify-content:center">Email a Consultation Request</a>
-          <a href="tel:2037186513" class="btn btn-ondark" style="justify-content:center">Call (203) 718-6513</a>
+      <div class="portal" id="waitlist">
+        <div class="wl-live">
+          <h3>Join the waitlist</h3>
+          <p>A few details are all it takes. As space opens, you'll hear from me directly — we'll talk through what you're looking for, the concierge model, and whether Azimuth is the right fit.</p>
+          <form class="wl-form" name="waitlist" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="waitlist">
+            <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+            <div class="wl-field">
+              <label for="wl-name">Full name</label>
+              <input id="wl-name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="wl-field">
+              <label for="wl-email">Email</label>
+              <input id="wl-email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="wl-field">
+              <label for="wl-phone">Phone <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">(optional)</span></label>
+              <input id="wl-phone" name="phone" type="tel" autocomplete="tel">
+            </div>
+            <div class="wl-field">
+              <label for="wl-pref">Preferred way to reach you</label>
+              <select id="wl-pref" name="preferred_contact">
+                <option value="Email" selected>Email</option>
+                <option value="Phone call">Phone call</option>
+                <option value="Text">Text</option>
+              </select>
+            </div>
+            <div class="wl-field">
+              <label for="wl-msg">Anything you'd like me to know <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">(optional)</span></label>
+              <textarea id="wl-msg" name="message" placeholder="Scheduling needs, how you found the practice, general goals…"></textarea>
+            </div>
+            <p class="wl-hint">This form isn't a secure medical channel — please hold any detailed clinical information for our first conversation.</p>
+            <button type="submit" class="btn btn-brass">Join the Waitlist</button>
+            <p class="wl-error">Something went wrong sending the form. Please email <a href="mailto:info@azimuththerapeutics.com?subject=Waitlist%20Request">info@azimuththerapeutics.com</a> instead.</p>
+          </form>
+        </div>
+        <div class="wl-success">
+          <span class="wsm" aria-hidden="true"><svg viewBox="0 0 1594 1288" style="width:100%;height:auto"><use href="#az"/></svg></span>
+          <h4>You're on the list.</h4>
+          <p>Thank you — your spot is held in order received. When space opens, I'll reach out personally using the contact method you chose.</p>
         </div>
         <p class="note">Not for emergencies. In a mental health emergency, call or text <a href="tel:988">988</a>, call 911, or go to your nearest emergency room.</p>
       </div>
@@ -1334,9 +1387,9 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
   <div class="wrap">
     <span class="cmark fade"><svg viewBox="0 0 1594 1288" style="width:100%;height:auto"><use href="#az"/></svg></span>
     <h2 class="fade">Find your bearing.</h2>
-    <p class="fade">Complete psychiatric care from one clinician who knows your whole story — and stays on course with you.</p>
+    <p class="fade">Complete psychiatric care from one clinician who knows your whole story — and stays on course with you. Space is limited by design; the waitlist is where it begins.</p>
     <div class="actions fade">
-      <a href="mailto:info@azimuththerapeutics.com?subject=Consultation%20Request" class="btn btn-brass">Schedule a Consultation</a>
+      <a href="#contact" class="btn btn-brass">Join the Waitlist</a>
       <a href="tel:2037186513" class="btn btn-ondark">203 · 718 · 6513</a>
     </div>
   </div>
@@ -1382,6 +1435,19 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
     var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('vis');io.unobserve(x.target);}})},{threshold:.12,rootMargin:'0px 0px -40px'});
     document.querySelectorAll('.fade').forEach(function(el){io.observe(el)});
   }else{document.querySelectorAll('.fade').forEach(function(el){el.classList.add('vis')});}
+  var wf=document.querySelector('form[name="waitlist"]');
+  if(wf){wf.addEventListener('submit',function(e){
+    e.preventDefault();
+    var btn=wf.querySelector('button[type="submit"]'),err=wf.querySelector('.wl-error');
+    btn.disabled=true;btn.textContent='Sending…';err.style.display='none';
+    var data=new URLSearchParams(new FormData(wf)).toString();
+    fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:data})
+      .then(function(r){if(!r.ok)throw new Error(r.status);
+        document.querySelector('.wl-live').style.display='none';
+        var s=document.querySelector('.wl-success');s.style.display='block';
+        s.setAttribute('tabindex','-1');s.focus({preventScroll:false});})
+      .catch(function(){err.style.display='block';btn.disabled=false;btn.textContent='Join the Waitlist';});
+  });}
 })();
 </script>
 </body>
