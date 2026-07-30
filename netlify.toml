@@ -1,3 +1,4 @@
 [build]
 publish = "Azimuth Website"
 command = "echo static"
+# waitlist form: registered via Netlify Forms
