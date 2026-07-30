@@ -1,3 +1,3 @@
 [build]
-  publish = "."
-    command = "echo static"
+publish = "Azimuth Website"
+command = "echo static"
