@@ -140,7 +140,7 @@ p{font-size:1.02rem}
 .sec-head p{margin-top:16px;color:var(--muted);font-size:1.05rem;text-wrap:pretty}
 .center{text-align:center}
 /* buttons */
-.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-size:.82rem;font-weight:500;letter-spacing:.04em;padding:14px 30px;border-radius:var(--r);border:1px solid transparent;transition:.22s ease;cursor:pointer;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;min-height:48px;gap:9px;font-family:var(--sans);font-size:.82rem;font-weight:500;letter-spacing:.04em;padding:14px 30px;border-radius:var(--r);border:1px solid transparent;transition:.22s ease;cursor:pointer;white-space:nowrap}
 .btn-ink{background:var(--basalt);color:#fff;border-color:var(--basalt)}
 .btn-ink:hover{background:#232c3d;border-color:#232c3d}
 .btn-brass{background:transparent;color:#fff;border-color:var(--brass)}
@@ -163,7 +163,7 @@ header.solid{background:color-mix(in srgb,var(--stone) 92%,transparent);backdrop
 .nav-links a.navlink:hover{color:#fff}
 .nav-cta{display:flex;align-items:center;gap:22px;flex:0 0 auto}
 .nav-phone{font-family:var(--sans);font-size:.9rem;font-weight:600;color:#fff;transition:color .3s ease;white-space:nowrap}
-.nav .btn-nav{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);padding:13px 24px;white-space:nowrap;border-radius:var(--r);font-family:var(--sans);font-size:.82rem;font-weight:500;letter-spacing:.04em;transition:.22s ease}
+.nav .btn-nav{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);padding:13px 24px;min-height:44px;white-space:nowrap;border-radius:var(--r);font-family:var(--sans);font-size:.82rem;font-weight:500;letter-spacing:.04em;transition:.22s ease}
 .nav .btn-nav:hover{background:rgba(255,255,255,.1);border-color:#fff}
 .hamb{display:none;flex-direction:column;justify-content:center;gap:5px;padding:8px;width:44px;min-height:44px;background:none;border:none;cursor:pointer}
 .hamb span{height:1.5px;background:#fff;border-radius:2px;transition:.2s}
@@ -287,6 +287,7 @@ section[id]{scroll-margin-top:84px}
 .wl-field textarea{min-height:88px;resize:vertical}
 .wl-field input::placeholder,.wl-field textarea::placeholder{color:rgba(255,255,255,.3)}
 .wl-field input:focus,.wl-field select:focus,.wl-field textarea:focus{outline:none;border-color:var(--brass)}
+.wl-field input:focus-visible,.wl-field select:focus-visible,.wl-field textarea:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .wl-form .btn{width:100%;justify-content:center}
 .wl-hint{font-size:.72rem;color:rgba(255,255,255,.42);margin:-8px 0 16px;line-height:1.5}
 .wl-error{display:none;font-size:.82rem;color:#e8b4a8;margin-top:14px;line-height:1.6;text-align:center}
@@ -1219,7 +1220,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       <a class="navlink menu-cta" href="#contact" style="color:var(--brass-ink);font-weight:600">Join the Waitlist</a>
     </nav>
     <div class="nav-cta">
-      <a href="tel:2037186513" class="nav-phone">203&#8201;·&#8201;718&#8201;·&#8201;6513</a>
+      <a href="tel:+12037186513" class="nav-phone">203&#8201;·&#8201;718&#8201;·&#8201;6513</a>
       <a href="#contact" class="btn-nav btn"><span class="cta-full">Join the Waitlist</span><span class="cta-short">Waitlist</span></a>
       <button class="hamb" id="hamb" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
@@ -1279,12 +1280,12 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       <div class="pillar fade">
         <div class="num">03</div>
         <h3>Direct Access</h3>
-        <p>Reach your clinician between visits — including 24/7 emergency advocacy and direct ED consultation when it matters most.</p>
+        <p>Reach your clinician between visits — with emergency advocacy and direct ED consultation when it matters most.</p>
       </div>
       <div class="pillar fade">
         <div class="num">04</div>
         <h3>Small by Design</h3>
-        <p>An intentionally limited panel prioritizing depth over volume. New clients are accepted selectively, with priority for referrals.</p>
+        <p>An intentionally limited panel prioritizing depth over volume. New patients are accepted selectively, with priority for referrals.</p>
       </div>
     </div>
   </div>
@@ -1295,7 +1296,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
     <div class="sec-head fade">
       <span class="eyebrow">Services</span>
       <h2>Complete care, one bearing</h2>
-      <p>Treating depression, anxiety, PTSD, ADHD, bipolar disorder, and insomnia — with the flexibility to take care beyond the office when it serves the work.</p>
+      <p>Treating depression, anxiety, PTSD, ADHD, bipolar disorder, and insomnia — with the flexibility to carry care beyond the office when it serves the work.</p>
     </div>
     <div class="svc-grid fade">
       <div class="svc">
@@ -1389,7 +1390,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       <div class="partner">
         <div class="tag">Supplements</div>
         <h3>Thorne &amp; Pure Encapsulations</h3>
-        <p>Pharmaceutical-grade, third-party tested supplements through Fullscript — no proprietary blends, no markup games.</p>
+        <p>Pharmaceutical-grade, third-party tested supplements through Fullscript — no proprietary blends, no inflated markups.</p>
       </div>
     </div>
   </div>
@@ -1403,8 +1404,8 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
     </div>
     <div class="model fade">
       <p>Azimuth doesn't bill insurance. That's a deliberate choice: it's what makes unhurried appointments, integrated sessions, direct access, and an intentionally small panel possible.</p>
-      <p class="big">Superbills are provided for every visit — most clients with out-of-network benefits recoup 40–80% of session costs.</p>
-      <p>We'll walk you through checking your out-of-network benefits before you commit to anything.</p>
+      <p class="big">Superbills are provided for every visit — plans with out-of-network benefits typically reimburse 40–80% of session costs.</p>
+      <p>We'll walk you through checking your out-of-network benefits before you commit to anything. As a self-pay practice, you're entitled to a Good Faith Estimate of expected charges before care begins.</p>
     </div>
   </div>
 </section>
@@ -1416,7 +1417,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       <h2>Currently accepting patients by waitlist</h2>
       <p style="margin-top:16px;color:rgba(255,255,255,.72)">The work here is intimate and comprehensive — one clinician, an intentionally small panel, and the time each patient's care actually deserves. That depth is the whole point, and it means space is limited. New patients are currently welcomed from the waitlist as space opens.</p>
       <p style="margin-top:14px;color:rgba(255,255,255,.72)">Questions in the meantime? Reach out and we'll find the right path — even if it isn't here.</p>
-      <a href="tel:2037186513" class="contact-phone">203 · 718 · 6513</a>
+      <a href="tel:+12037186513" class="contact-phone">203 · 718 · 6513</a>
       <div class="crow">
         <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
         <div><div class="cl">Email</div><div class="cv"><a href="mailto:info@azimuththerapeutics.com">info@azimuththerapeutics.com</a></div></div>
@@ -1436,15 +1437,15 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
             <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
             <div class="wl-field">
               <label for="wl-name">Full name</label>
-              <input id="wl-name" name="name" type="text" autocomplete="name" required>
+              <input id="wl-name" name="name" type="text" autocomplete="name" maxlength="120" required>
             </div>
             <div class="wl-field">
               <label for="wl-email">Email</label>
-              <input id="wl-email" name="email" type="email" autocomplete="email" required>
+              <input id="wl-email" name="email" type="email" autocomplete="email" maxlength="254" required>
             </div>
             <div class="wl-field">
               <label for="wl-phone">Phone <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">(optional)</span></label>
-              <input id="wl-phone" name="phone" type="tel" autocomplete="tel">
+              <input id="wl-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30">
             </div>
             <div class="wl-field">
               <label for="wl-pref">Preferred way to reach you</label>
@@ -1456,14 +1457,14 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
             </div>
             <div class="wl-field">
               <label for="wl-msg">Anything you'd like me to know <span style="text-transform:none;letter-spacing:0;font-weight:400;opacity:.7">(optional)</span></label>
-              <textarea id="wl-msg" name="message" placeholder="Scheduling needs, how you found the practice, general goals…"></textarea>
+              <textarea id="wl-msg" name="message" maxlength="2000" placeholder="Scheduling needs, how you found the practice, general goals…"></textarea>
             </div>
             <p class="wl-hint">This form isn't a secure medical channel — please hold any detailed clinical information for our first conversation.</p>
             <button type="submit" class="btn btn-brass">Join the Waitlist</button>
             <p class="wl-error">Something went wrong sending the form. Please email <a href="mailto:info@azimuththerapeutics.com?subject=Waitlist%20Request">info@azimuththerapeutics.com</a> instead.</p>
           </form>
         </div>
-        <div class="wl-success">
+        <div class="wl-success" role="status">
           <span class="wsm" aria-hidden="true"><svg viewBox="0 0 1594 1288" style="width:100%;height:auto"><use href="#az"/></svg></span>
           <h4>You're on the list.</h4>
           <p>Thank you — your spot is held in order received. When space opens, I'll reach out personally using the contact method you chose.</p>
@@ -1483,7 +1484,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
     <p class="fade">Complete psychiatric care from one clinician who knows your whole story — and stays on course with you. Space is limited by design; the waitlist is where it begins.</p>
     <div class="actions fade">
       <a href="#contact" class="btn btn-brass">Join the Waitlist</a>
-      <a href="tel:2037186513" class="btn btn-ondark">203 · 718 · 6513</a>
+      <a href="tel:+12037186513" class="btn btn-ondark">203 · 718 · 6513</a>
     </div>
   </div>
 </section>
@@ -1505,11 +1506,11 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       </div>
       <div class="foot">
         <div class="fh">Contact</div>
-        <ul><li><a href="tel:2037186513">(203) 718-6513</a></li><li><a href="mailto:info@azimuththerapeutics.com">info@azimuththerapeutics.com</a></li><li>New Haven County · CT telehealth</li><li style="margin-top:6px;color:rgba(255,255,255,.42)">In crisis? Call or text 988</li></ul>
+        <ul><li><a href="tel:+12037186513">(203) 718-6513</a></li><li><a href="mailto:info@azimuththerapeutics.com">info@azimuththerapeutics.com</a></li><li>New Haven County · CT telehealth</li><li><a href="privacy.html">Privacy &amp; Notice of Privacy Practices</a></li><li style="margin-top:6px;color:rgba(255,255,255,.42)">In crisis? Call or text 988</li></ul>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>&copy; 2023–2026 Azimuth Therapeutics, LLC. All rights reserved.</span>
+      <span>&copy; 2023–2026 Azimuth Therapeutics, LLC. All rights reserved. You have the right to receive a <a href="privacy.html#gfe" style="color:inherit;text-decoration:underline">Good Faith Estimate</a> of expected charges.</span>
       <span>Arthur J. Anderson, APRN, PMHNP-BC, LCSW</span>
     </div>
   </div>
@@ -1602,8 +1603,15 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
     }
   }
   var wf=document.querySelector('form[name="waitlist"]');
-  if(wf){wf.addEventListener('submit',function(e){
+  if(wf){var wpref=wf.querySelector('#wl-pref'),wph=wf.querySelector('#wl-phone');
+  if(wph){wph.addEventListener('input',function(){wph.setCustomValidity('')});}
+  if(wpref){wpref.addEventListener('change',function(){if(wph)wph.setCustomValidity('')});}
+  wf.addEventListener('submit',function(e){
     e.preventDefault();
+    if(wpref&&wph&&wpref.value!=='Email'&&!wph.value.trim()){
+      wph.setCustomValidity('Please add a phone number so we can reach you by '+(wpref.value==='Text'?'text':'phone')+'.');
+      wph.reportValidity();wph.focus();return;
+    }
     var btn=wf.querySelector('button[type="submit"]'),err=wf.querySelector('.wl-error');
     btn.disabled=true;btn.textContent='Sending…';err.style.display='none';
     var data=new URLSearchParams(new FormData(wf)).toString();
