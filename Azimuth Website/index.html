@@ -8,7 +8,7 @@
 <meta name="description" content="One clinician. Complete psychiatric care. Integrated medication management and psychotherapy with Arthur J. Anderson, APRN, PMHNP-BC, LCSW — concierge psychiatry serving New Haven County and all of Connecticut by telehealth.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Azimuth Therapeutics — One Clinician. Complete Psychiatric Care.">
-<meta property="og:description" content="Integrated psychiatry and psychotherapy from a single dual-credentialed clinician. Concierge care, 90-minute intakes, direct access. New Haven County & Connecticut telehealth.">
+<meta property="og:description" content="Integrated psychiatry and psychotherapy from a single dual-credentialed clinician. Concierge care, appointments that take as long as they need to, direct access. New Haven County & Connecticut telehealth.">
 <meta property="og:image" content="og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,7 +48,20 @@
   }
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;color-scheme:light dark}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;color-scheme:light dark;scroll-snap-type:y proximity}
+section.hero,section.sec{scroll-snap-align:start;scroll-margin-top:56px}
+section.hero{scroll-margin-top:0}
+section.interlude,section.interlude-dark{scroll-snap-align:center}
+/* intro sequence */
+#intro{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;background:radial-gradient(120% 120% at 50% 28%,#232c3d 0%,var(--basalt-deep) 72%);opacity:1;transition:opacity .7s ease}
+#intro.done{opacity:0;pointer-events:none}
+#intro .imark{width:min(230px,55vw);color:var(--brass);filter:drop-shadow(0 12px 44px rgba(0,0,0,.5))}
+#intro .imark svg{width:100%;height:auto;display:block;transform-origin:50.2% 51.2%;transform:rotate(-160deg)}
+#intro.play .imark svg{animation:needle 1.7s cubic-bezier(.23,1.18,.32,1) forwards}
+@keyframes needle{from{transform:rotate(-160deg)}to{transform:rotate(0deg)}}
+#intro .itag{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(1.35rem,3.4vw,1.95rem);color:#fff;letter-spacing:.01em;opacity:0;transform:translateY(10px);transition:opacity .8s ease,transform .8s ease}
+#intro.play .itag{opacity:1;transform:none;transition-delay:1.15s}
+body.intro-lock{overflow:hidden}
 body{overflow-x:clip;font-family:var(--sans);color:var(--body);background:var(--stone);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
 svg{display:block}a{color:inherit;text-decoration:none}ul{list-style:none}img{display:block;max-width:100%}
 h1,h2,h3,h4{font-family:var(--serif);color:var(--ink);font-weight:500;line-height:1.12;letter-spacing:.005em;text-wrap:balance}
@@ -269,6 +282,11 @@ footer{background:var(--basalt-deep);color:rgba(255,255,255,.58);padding:64px 0 
 </head>
 <body>
 <a class="skip" href="#approach">Skip to content</a>
+
+<div id="intro" hidden aria-hidden="true">
+  <span class="imark"><svg viewBox="0 0 1594 1288"><use href="#az"/></svg></span>
+  <div class="itag">Find your North Star.</div>
+</div>
 
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg"><symbol id="az" viewBox="0 192 1594 1288">
 <g transform="translate(0.000000,1660.000000) scale(0.100000,-0.100000)"
@@ -1146,7 +1164,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       <span class="strip-label">The model</span>
       <span class="strip-item">Private-pay concierge</span>
       <span class="strip-item">Superbills for out-of-network reimbursement</span>
-      <span class="strip-item">90-minute intakes</span>
+      <span class="strip-item">Unhurried appointments</span>
       <span class="strip-item">Direct provider access</span>
     </div>
   </div>
@@ -1179,8 +1197,8 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       </div>
       <div class="pillar fade">
         <div class="num">02</div>
-        <h3>90-Minute Intakes</h3>
-        <p>Your first appointment is a real evaluation — not a fifteen-minute medication check. Time to understand the whole history before anything is prescribed.</p>
+        <h3>Appointments That Take as Long as They Need To</h3>
+        <p>No clock-watching, no fifteen-minute medication checks. Your first appointment is a real evaluation, and every visit after it gets the time your care actually requires.</p>
       </div>
       <div class="pillar fade">
         <div class="num">03</div>
@@ -1309,7 +1327,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       <h2>Why private-pay</h2>
     </div>
     <div class="model fade">
-      <p>Azimuth doesn't bill insurance. That's a deliberate choice: it's what makes 90-minute intakes, integrated sessions, direct access, and an intentionally small panel possible.</p>
+      <p>Azimuth doesn't bill insurance. That's a deliberate choice: it's what makes unhurried appointments, integrated sessions, direct access, and an intentionally small panel possible.</p>
       <p class="big">Superbills are provided for every visit — most clients with out-of-network benefits recoup 40–80% of session costs.</p>
       <p>We'll walk you through checking your out-of-network benefits before you commit to anything.</p>
     </div>
@@ -1423,6 +1441,22 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
 </footer>
 
 <script>
+(function(){
+  var el=document.getElementById('intro');
+  if(el){
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var seen=false;try{seen=sessionStorage.getItem('azIntro')==='1'}catch(e){}
+    if(reduce||seen){el.remove();}
+    else{
+      try{sessionStorage.setItem('azIntro','1')}catch(e){}
+      el.hidden=false;document.body.classList.add('intro-lock');
+      requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('play')})});
+      var t=setTimeout(end,3000);
+      function end(){clearTimeout(t);el.classList.add('done');document.body.classList.remove('intro-lock');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},750);}
+      ['click','wheel','touchstart','keydown'].forEach(function(ev){el.addEventListener(ev,end,{passive:true})});
+    }
+  }
+})();
 (function(){
   var hdr=document.querySelector('header');
   function onScroll(){if(hdr)hdr.classList.toggle('solid',window.scrollY>60);}
