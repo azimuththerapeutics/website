@@ -48,20 +48,33 @@
   }
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;color-scheme:light dark;scroll-snap-type:y proximity}
-section.hero,section.sec{scroll-snap-align:start;scroll-margin-top:56px}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;color-scheme:light dark}
+section.hero,section.sec{scroll-margin-top:56px}
 section.hero{scroll-margin-top:0}
-section.interlude,section.interlude-dark{scroll-snap-align:center}
+/* native CSS snap on touch devices only — desktop uses JS settle-assist (smoother) */
+@media (pointer:coarse){
+  html{scroll-snap-type:y proximity}
+  section.hero,section.sec{scroll-snap-align:start}
+  section.interlude,section.interlude-dark{scroll-snap-align:center}
+}
 /* intro sequence */
 #intro{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;background:radial-gradient(120% 120% at 50% 28%,#232c3d 0%,var(--basalt-deep) 72%);opacity:1;transition:opacity .7s ease}
 #intro.done{opacity:0;pointer-events:none}
 #intro .imark{width:min(230px,55vw);color:var(--brass);filter:drop-shadow(0 12px 44px rgba(0,0,0,.5))}
-#intro .imark svg{width:100%;height:auto;display:block;transform-origin:50.2% 51.2%;transform:rotate(-160deg)}
+#intro .imark svg{width:100%;height:auto;display:block;transform-origin:50.05% 52.42%;transform:rotate(-160deg)}
 #intro.play .imark svg{animation:needle 1.7s cubic-bezier(.23,1.18,.32,1) forwards}
 @keyframes needle{from{transform:rotate(-160deg)}to{transform:rotate(0deg)}}
 #intro .itag{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(1.35rem,3.4vw,1.95rem);color:#fff;letter-spacing:.01em;opacity:0;transform:translateY(10px);transition:opacity .8s ease,transform .8s ease}
 #intro.play .itag{opacity:1;transform:none;transition-delay:1.15s}
 body.intro-lock{overflow:hidden}
+/* quick compass flash on nav clicks */
+#navflash{position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;background:var(--basalt-deep);opacity:0;pointer-events:none;transition:opacity .18s ease}
+#navflash.on{opacity:.94;pointer-events:auto;transition:opacity .16s ease}
+#navflash.off{opacity:0;pointer-events:none;transition:opacity .5s ease}
+#navflash .fmark{width:120px;color:var(--brass);opacity:.85}
+#navflash .fmark svg{width:100%;height:auto;display:block;transform-origin:50.05% 52.42%}
+#navflash.on .fmark svg{animation:needle-quick .75s cubic-bezier(.25,1.15,.35,1) forwards}
+@keyframes needle-quick{from{transform:rotate(-100deg)}to{transform:rotate(0deg)}}
 body{overflow-x:clip;font-family:var(--sans);color:var(--body);background:var(--stone);line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
 svg{display:block}a{color:inherit;text-decoration:none}ul{list-style:none}img{display:block;max-width:100%}
 h1,h2,h3,h4{font-family:var(--serif);color:var(--ink);font-weight:500;line-height:1.12;letter-spacing:.005em;text-wrap:balance}
@@ -110,7 +123,7 @@ header.solid{background:color-mix(in srgb,var(--stone) 92%,transparent);backdrop
 .nav-phone{font-family:var(--sans);font-size:.9rem;font-weight:600;color:#fff;transition:color .3s ease;white-space:nowrap}
 .nav .btn-nav{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4);padding:13px 24px;white-space:nowrap;border-radius:var(--r);font-family:var(--sans);font-size:.82rem;font-weight:500;letter-spacing:.04em;transition:.22s ease}
 .nav .btn-nav:hover{background:rgba(255,255,255,.1);border-color:#fff}
-.hamb{display:none;flex-direction:column;gap:5px;padding:8px;width:40px;background:none;border:none;cursor:pointer}
+.hamb{display:none;flex-direction:column;justify-content:center;gap:5px;padding:8px;width:44px;min-height:44px;background:none;border:none;cursor:pointer}
 .hamb span{height:1.5px;background:#fff;border-radius:2px;transition:.2s}
 header.solid .brand-txt .b1{color:var(--ink)}
 header.solid .brand-txt .b2{color:var(--muted)}
@@ -125,6 +138,23 @@ section[id]{scroll-margin-top:84px}
 @media(max-width:1240px){.nav-links{gap:26px}}
 @media(max-width:1160px){.nav-phone{display:none}.brand-txt .b2{display:none}}
 @media(max-width:1010px){.nav-links{gap:18px}.nav-links a.navlink{font-size:.84rem}.brand-txt .b1{font-size:1.15rem}}
+.btn-nav .cta-short{display:none}
+@media(max-width:640px){
+  .btn-nav .cta-full{display:none}
+  .btn-nav .cta-short{display:inline}
+  .btn-nav{padding:12px 18px}
+  .nav-cta{gap:12px}
+}
+@media(max-width:520px){
+  .brand .b2{display:none}
+  .brand{gap:10px}
+  .brand .b1{font-size:1.02rem}
+}
+.menu-cta{display:none}
+@media(max-width:412px){
+  .btn-nav{display:none}
+  .nav-links.open .menu-cta{display:block}
+}
 @media(max-width:920px){
   .nav-links{display:none}.hamb{display:flex}
   .nav-links.open{display:flex;position:absolute;top:74px;left:0;right:0;flex-direction:column;gap:22px;background:var(--stone);padding:26px var(--pad);border-bottom:1px solid var(--line);box-shadow:0 14px 32px rgba(10,14,22,.18)}
@@ -171,8 +201,9 @@ section[id]{scroll-margin-top:84px}
 /* provider split */
 .split{display:grid;grid-template-columns:.92fr 1.08fr;gap:72px;align-items:center}
 .prov-card{background:var(--basalt);color:#fff;border-radius:var(--r);padding:52px 46px;position:relative;overflow:hidden;text-align:center}
-.prov-card .watermark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:340px;opacity:.07;pointer-events:none;color:var(--ink)}
-.prov-card .pphoto{width:176px;height:176px;border-radius:50%;object-fit:cover;margin:0 auto 24px;border:2px solid rgba(201,169,110,.55);box-shadow:0 12px 34px rgba(0,0,0,.45);position:relative;z-index:1;display:block}
+.prov-card .pwrap{position:relative;display:block;width:176px;margin:0 auto 24px}
+.prov-card .watermark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(360px,96vw);max-width:none;opacity:.12;pointer-events:none;color:#fff;z-index:0}
+.prov-card .pphoto{width:176px;height:176px;border-radius:50%;object-fit:cover;border:2px solid rgba(201,169,110,.55);box-shadow:0 12px 34px rgba(0,0,0,.45);position:relative;z-index:1;display:block}
 .prov-card h3{color:#fff;font-size:1.7rem;position:relative;z-index:1}
 .prov-card .creds{font-family:var(--sans);font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);margin:8px 0 4px;position:relative;z-index:1}
 .prov-card .role{font-family:var(--sans);font-size:.85rem;color:rgba(255,255,255,.6);position:relative;z-index:1}
@@ -236,7 +267,7 @@ footer{background:var(--basalt-deep);color:rgba(255,255,255,.58);padding:64px 0 
 .foot-brand .fb .m svg{width:100%;height:100%}
 .foot-brand .fb .n{font-family:var(--serif);font-size:1.28rem;color:#fff;font-weight:600}
 .foot-brand p{font-size:.9rem;line-height:1.7;color:rgba(255,255,255,.55);max-width:300px}
-.foot h5{font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:18px}
+.foot .fh{font-family:var(--sans);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:18px}
 .foot ul{display:flex;flex-direction:column;gap:11px}
 .foot ul a{font-size:.9rem;color:rgba(255,255,255,.6);transition:color .2s}
 .foot ul a:hover{color:#fff}
@@ -287,6 +318,8 @@ footer{background:var(--basalt-deep);color:rgba(255,255,255,.58);padding:64px 0 
   <span class="imark"><svg viewBox="0 0 1594 1288"><use href="#az"/></svg></span>
   <div class="itag">Find your North Star.</div>
 </div>
+
+<div id="navflash" aria-hidden="true"><span class="fmark"><svg viewBox="0 0 1594 1288"><use href="#az"/></svg></span></div>
 
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg"><symbol id="az" viewBox="0 192 1594 1288">
 <g transform="translate(0.000000,1660.000000) scale(0.100000,-0.100000)"
@@ -1141,10 +1174,11 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
       <a class="navlink" href="#provider">Clinician</a>
       <a class="navlink" href="#model">Model</a>
       <a class="navlink" href="#contact">Connect</a>
+      <a class="navlink menu-cta" href="#contact" style="color:var(--brass-ink);font-weight:600">Join the Waitlist</a>
     </nav>
     <div class="nav-cta">
       <a href="tel:2037186513" class="nav-phone">203&#8201;·&#8201;718&#8201;·&#8201;6513</a>
-      <a href="#contact" class="btn-nav btn">Join the Waitlist</a>
+      <a href="#contact" class="btn-nav btn"><span class="cta-full">Join the Waitlist</span><span class="cta-short">Waitlist</span></a>
       <button class="hamb" id="hamb" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -1273,8 +1307,7 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
 <section class="sec" id="provider">
   <div class="wrap split">
     <div class="prov-card fade">
-      <span class="watermark" aria-hidden="true"><svg viewBox="0 0 1594 1288"><use href="#az"/></svg></span>
-      <img class="pphoto" src="portrait.jpg" alt="Arthur J. Anderson smiling on a snowy trail" width="720" height="720" loading="lazy">
+      <span class="pwrap"><span class="watermark" aria-hidden="true"><svg viewBox="0 0 1594 1288"><use href="#az"/></svg></span><img class="pphoto" src="portrait.jpg" alt="Arthur J. Anderson smiling on a snowy trail" width="720" height="720" loading="lazy"></span>
       <h3>Arthur J. Anderson</h3>
       <div class="creds">APRN · PMHNP-BC · LCSW · RN · RYT-200</div>
       <div class="role">Founder &amp; Clinician</div>
@@ -1421,15 +1454,15 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
         <p>Concierge psychiatry in New Haven County, Connecticut. One clinician. Complete psychiatric care.</p>
       </div>
       <div class="foot">
-        <h5>Practice</h5>
+        <div class="fh">Practice</div>
         <ul><li><a href="#approach">The Approach</a></li><li><a href="#services">Services</a></li><li><a href="#provider">Your Clinician</a></li><li><a href="#model">The Concierge Model</a></li></ul>
       </div>
       <div class="foot">
-        <h5>Tools</h5>
+        <div class="fh">Tools</div>
         <ul><li><a href="#diagnostics">GeneSight Testing</a></li><li><a href="#diagnostics">Functional Labs</a></li><li><a href="#diagnostics">Supplements</a></li><li><a href="#services">Professional Services</a></li></ul>
       </div>
       <div class="foot">
-        <h5>Contact</h5>
+        <div class="fh">Contact</div>
         <ul><li><a href="tel:2037186513">(203) 718-6513</a></li><li><a href="mailto:info@azimuththerapeutics.com">info@azimuththerapeutics.com</a></li><li>New Haven County · CT telehealth</li><li style="margin-top:6px;color:rgba(255,255,255,.42)">In crisis? Call or text 988</li></ul>
       </div>
     </div>
@@ -1469,6 +1502,63 @@ c0 -27 -123 -23 -128 4 -2 13 5 17 35 20 64 5 93 -2 93 -24z m-33 -65 c11 -29
     var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('vis');io.unobserve(x.target);}})},{threshold:.12,rootMargin:'0px 0px -40px'});
     document.querySelectorAll('.fade').forEach(function(el){io.observe(el)});
   }else{document.querySelectorAll('.fade').forEach(function(el){el.classList.add('vis')});}
+  /* ---- nav compass flash + desktop settle-assist ---- */
+  var reduceM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var flash=document.getElementById('navflash');
+  var transiting=false;
+  if(flash&&!reduceM){
+    document.querySelectorAll('#navlinks a[href^="#"], .nav-cta a[href^="#"]').forEach(function(a){
+      a.addEventListener('click',function(e){
+        var tgt=document.querySelector(a.getAttribute('href'));
+        if(!tgt)return;
+        e.preventDefault();
+        transiting=true;
+        flash.classList.remove('off');flash.classList.add('on');
+        setTimeout(function(){
+          var top=tgt.getBoundingClientRect().top+window.scrollY-(tgt.id==='approach'||tgt.classList.contains('sec')?56:0);
+          window.scrollTo({top:Math.max(0,top),behavior:'auto'});
+          try{history.replaceState(null,'',a.getAttribute('href'))}catch(err){}
+          setTimeout(function(){
+            flash.classList.remove('on');flash.classList.add('off');
+            setTimeout(function(){transiting=false},550);
+          },420);
+        },190);
+      });
+    });
+  }else if(flash){flash.remove();}
+  /* settle-assist: fine pointers only (touch uses native CSS snap) */
+  if(!reduceM&&window.matchMedia&&matchMedia('(pointer:fine)').matches){
+    var settleTargets=function(){
+      var list=[];
+      document.querySelectorAll('section.hero,section.sec,section.interlude,section.interlude-dark').forEach(function(s){
+        var r=s.getBoundingClientRect(),topAbs=r.top+window.scrollY;
+        if(s.classList.contains('interlude')||s.classList.contains('interlude-dark')){
+          list.push(topAbs+r.height/2-window.innerHeight/2); // center short bands
+        }else{
+          list.push(s.classList.contains('hero')?0:topAbs-56); // align tops under header
+        }
+      });
+      return list;
+    };
+    var settling=false,st;
+    var onStop=function(){
+      if(settling||transiting)return;
+      var y=window.scrollY,max=document.documentElement.scrollHeight-window.innerHeight;
+      if(y<4||y>max-4)return;
+      var best=null,bd=1e9;
+      settleTargets().forEach(function(t){var d=Math.abs(t-y);if(d<bd){bd=d;best=t}});
+      if(best!==null&&bd>6&&bd<200){
+        settling=true;
+        window.scrollTo({top:Math.max(0,Math.min(max,best)),behavior:'smooth'});
+        setTimeout(function(){settling=false},750);
+      }
+    };
+    if('onscrollend' in window){
+      window.addEventListener('scrollend',function(){if(!settling)onStop()});
+    }else{
+      window.addEventListener('scroll',function(){if(settling||transiting)return;clearTimeout(st);st=setTimeout(onStop,170)},{passive:true});
+    }
+  }
   var wf=document.querySelector('form[name="waitlist"]');
   if(wf){wf.addEventListener('submit',function(e){
     e.preventDefault();
