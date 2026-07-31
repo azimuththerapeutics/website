@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Off course — Azimuth Therapeutics</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="That page doesn't exist. Return to Azimuth Therapeutics.">
+<link rel="icon" href="compass-logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brass:#7a6136;
+    --basalt:#151b26;
+    --stone:#F7F5F0;
+    --stone-warm:#EFEBE2;
+    --ink:var(--basalt);
+    --bg:var(--stone);
+    --panel:var(--stone-warm);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --brass:#d9bf8b;
+      --ink:#F7F5F0;
+      --bg:#10151e;
+      --panel:#151b26;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-weight:300;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:2rem 1.25rem;
+    line-height:1.6;
+  }
+  main{max-width:34rem;text-align:center}
+  .mark{
+    width:88px;height:88px;
+    margin:0 auto 2rem;
+    opacity:.55;
+  }
+  .mark img{width:100%;height:auto;display:block}
+  .eyebrow{
+    font-size:.75rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--brass);
+    margin:0 0 1rem;
+    font-weight:500;
+  }
+  h1{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-weight:500;
+    font-size:clamp(2rem,6vw,3rem);
+    line-height:1.15;
+    margin:0 0 1rem;
+  }
+  p{margin:0 auto 2rem;max-width:28rem;opacity:.82}
+  .actions{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:.75rem 1.5rem;
+    border-radius:2px;
+    text-decoration:none;
+    font-size:.95rem;
+    letter-spacing:.02em;
+    border:1px solid var(--brass);
+    color:var(--brass);
+    background:transparent;
+    transition:background .2s ease,color .2s ease;
+  }
+  .btn-primary{background:var(--brass);color:var(--bg)}
+  .btn:hover{background:var(--brass);color:var(--bg)}
+  .btn:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+  .crisis{
+    margin:2.5rem auto 0;
+    padding-top:1.5rem;
+    border-top:1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+    font-size:.85rem;
+    opacity:.7;
+    max-width:30rem;
+  }
+  .crisis a{color:var(--brass)}
+</style>
+</head>
+<body>
+<main>
+  <div class="mark"><img src="compass-logo.svg" alt="" width="88" height="88"></div>
+  <p class="eyebrow">Error 404</p>
+  <h1>This heading leads nowhere.</h1>
+  <p>The page you're looking for doesn't exist — it may have moved, or the link may be incomplete. Let's get you back on course.</p>
+  <div class="actions">
+    <a class="btn btn-primary" href="/">Return home</a>
+    <a class="btn" href="/#contact">Join the waitlist</a>
+  </div>
+  <p class="crisis">Not for emergencies. In a mental health emergency, call or text <a href="tel:988">988</a>, call 911, or go to your nearest emergency room.</p>
+</main>
+</body>
+</html>
